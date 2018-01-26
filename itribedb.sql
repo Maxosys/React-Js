@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 25, 2018 at 02:03 PM
+-- Generation Time: Jan 26, 2018 at 01:18 PM
 -- Server version: 5.7.14
 -- PHP Version: 7.0.10
 
@@ -73,7 +73,7 @@ CREATE TABLE `itribe_community` (
 
 INSERT INTO `itribe_community` (`community_id`, `community_owner_id`, `community_name`, `community_size`, `community_religion`, `community_spoken`, `community_tagline`, `comminty_desc`, `community_visibility`, `community_status`, `community_location`, `community_lat_long`, `created_at`, `updated_at`) VALUES
 (1, 2, 'Indiaaa', 12, 'Indiaaa', 'Hindi , English ,Punjabi', 'Indiaaa\'s is the best', '', 'on', 1, '', '22.007760283609098_79.31053110326845', '2018-01-12 12:46:13', '2018-01-12 12:46:13'),
-(6, 2, 'China', 10, 'Chinies', 'China,English,Hindi', 'This is a China Community', 'This is a China Community okay.', 'on', 0, '', '35.17824703339206_99.51770094706076', '2018-01-12 13:10:04', '2018-01-12 13:10:04');
+(6, 2, 'China', 10, 'Chinies', 'China,English,Hindi', 'This is a China Community', 'This is a China Community okay.', 'on', 1, '', '35.17824703339206_99.51770094706076', '2018-01-12 13:10:04', '2018-01-12 13:10:04');
 
 -- --------------------------------------------------------
 
@@ -150,7 +150,11 @@ CREATE TABLE `itribe_messages` (
 --
 
 INSERT INTO `itribe_messages` (`msg_id`, `sender_id`, `reciver_id`, `msg_text`, `status`, `created_at`, `updated_at`, `remove_by`, `remove_all_by`, `community_id`, `chat_file`, `file_extension`) VALUES
-(1, 28, 1, 'Hi', 1, '2018-01-25 12:50:24', '2018-01-25 12:50:24', NULL, NULL, 1, 'text', '');
+(1, 28, 1, 'Hi', 1, '2018-01-25 12:50:24', '2018-01-25 12:50:24', NULL, NULL, 1, 'text', ''),
+(2, 28, 2, 'hi', 1, '2018-01-25 18:26:39', '2018-01-25 18:26:39', NULL, NULL, 1, 'text', ''),
+(3, 28, 2, 'good', 1, '2018-01-25 18:38:04', '2018-01-25 18:38:04', NULL, NULL, 1, 'text', ''),
+(4, 2, 28, 'hi2', 1, '2018-01-25 18:42:30', '2018-01-25 18:42:30', NULL, NULL, 0, 'text', ''),
+(5, 28, 2, 'nice', 1, '2018-01-26 09:32:04', '2018-01-26 09:32:04', NULL, NULL, 0, 'text', '');
 
 -- --------------------------------------------------------
 
@@ -182,7 +186,7 @@ INSERT INTO `itribe_users` (`id`, `name`, `email`, `password`, `location`, `stat
 (19, 'Aseem', 'info@itribe.com', '1f3ce40415a2081fa3eee75fc39fff8e56c22270d1a978a7249b592dcebd20b4', '', '1', '2018-01-18 11:34:00', NULL, 'web', NULL, NULL),
 (20, 'Ankit', 'ankit.sharma@nanowebtech.com', '1f3ce40415a2081fa3eee75fc39fff8e56c22270d1a978a7249b592dcebd20b4', '', '1', '2018-01-18 14:21:47', NULL, 'web', NULL, NULL),
 (26, 'a', 'a@gmail.com', '961b6dd3ede3cb8ecbaacbd68de040cd78eb2ed5889130cceb4c49268ea4d506', '', '1', '2018-01-24 10:46:36', NULL, 'web', NULL, NULL),
-(28, 'Neha Mehra Neha', 'nanowebtech12@gmail.com', '1991079741145830', '', '1', '2018-01-25 09:17:15', NULL, 'fb', '07/01/1992', 'female');
+(28, 'Neha Mehra', 'nanowebtech12@gmail.com', '1991079741145830', 'Indiaa', '1', '2018-01-25 09:17:15', NULL, 'fb', '07/01/1992', 'female');
 
 --
 -- Indexes for dumped tables
@@ -252,7 +256,7 @@ ALTER TABLE `itribe_commu_members`
 -- AUTO_INCREMENT for table `itribe_messages`
 --
 ALTER TABLE `itribe_messages`
-  MODIFY `msg_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `msg_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 --
 -- AUTO_INCREMENT for table `itribe_users`
 --

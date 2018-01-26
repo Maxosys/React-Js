@@ -1,7 +1,23 @@
+npm install
+
+1) Admin
+
+http://localhost:3000/apanel
+
+Email: admin@itribe.com
+Password: admin
+
+2) node server connect with proxy "proxy": "http://localhost:9000"
+
 node server run on http://localhost:9000
 
 Command : node server
 
 Connected with itribedb.sql database.
 
+3) a) React components in src/components
+   b) routes in routes.js
+	
+4) Backend in server folder
 
+5) connection file server/dbconnection.js
