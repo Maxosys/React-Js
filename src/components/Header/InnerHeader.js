@@ -152,7 +152,16 @@ export default class InnerHeader extends React.Component {
                 <li className="furtherlinks"><a href="/help">Help</a></li>
                 <li className="signup dropdown userpic">             
 
-                  <a href="#iq-home" className="dropdown-toggle" data-toggle="dropdown"> <i className="icon user"></i>{sessionStorage.getItem('session_username')} <i aria-hidden="true" className="fa fa-angle-down downarrow"></i></a>
+                  <a href="#iq-home" className="dropdown-toggle" data-toggle="dropdown"> 
+
+                  {
+                    sessionStorage.getItem('session_fbid') ?                     
+                    <img src={"http://graph.facebook.com/"+sessionStorage.getItem('session_fbid')+"/picture?type=small"} />
+                    :
+                    <i className="icon user"></i>
+                  }
+
+                  {sessionStorage.getItem('session_username')} <i aria-hidden="true" className="fa fa-angle-down downarrow"></i></a>
                   <ul className="dropdown-menu user-account-menu simple pull-right">   
                       <li><a className="inline-option" href="/edit-profile">Edit Profile</a></li>
                       <li><a className="inline-option" href="/accounts">Account Setting</a></li>

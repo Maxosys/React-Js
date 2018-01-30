@@ -4,6 +4,8 @@ import classnames from 'classnames';
 import Header from '../Header/Header.js';
 import { Link } from 'react-router';
 import $ from 'jquery';
+import './style.css';
+
 
 class Message extends Component {  
 
@@ -34,6 +36,8 @@ class Message extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleMessageSubmit = this.handleMessageSubmit.bind(this);
 
+    this._changeEvent = this._changeEvent.bind(this);
+
   }
 
     handleChange(event) {    
@@ -41,6 +45,41 @@ class Message extends Component {
     this.setState({value: event.target.value});    
 
   }
+
+// Library
+
+   _changeEvent(e) {
+
+    e.preventDefault();
+         
+    let reader = new FileReader();
+         
+    let file = e.target.files[0];  
+         
+    this.uploadForm(e.target.files[0]);
+
+    var _this = this;
+         
+    reader.onloadend = function() { 
+
+      _this.refs.preview.innerHTML= '<img width="250px" src="'+reader.result+'" />';
+    }
+         
+    reader.readAsDataURL(file);
+  }
+
+
+   uploadForm(file){
+        let form = new FormData(this.refs.myForm);
+        form.append('myImage', file);
+        fetch('/api/upload-profile-image', {
+          method: 'POST',
+          body: form
+        }).then(res => console.log('res of fetch', res));
+    }
+
+// end
+
 
     handleMessageSubmit(event) {
        
@@ -78,7 +117,7 @@ class Message extends Component {
                })
                .then( (json) => {
 
-        this.setState({ successmsg: "Message successfully Sent",showResults:true })
+        this.setState({ successmsg: "Message successfully Sent",showResults:true,value:"" })
                   
         this.getConversation(sender_id,reciver_id).then((conversation) => {this.setState({ conversation: conversation })});
                 
@@ -202,7 +241,10 @@ friendslist() {
 return (
 <div className="user-list desktopview">
 
-  { this.state.userfrnddata.map((data,key) =>
+  {
+
+ this.state.userfrnddata[0] ? 
+   this.state.userfrnddata.map((data,key) =>
 
       <a href={"/message/"+sessionStorage.getItem('session_tokenid')+"/"+data.id+"/0"}> <div className="user-w" key={key}>
                 <div className="avatar with-status status-green">
@@ -218,10 +260,18 @@ return (
               </div>
 
       </a>
-  )}
+  )
+
+:
+
+  'No friend list'
+
+}
                         
             </div>
   );
+
+
 
 }
 
@@ -234,8 +284,11 @@ return (
  
                 <div className="user-list">
 
-  { this.state.userfrnddata.map((data,key) =>
+  { 
 
+    this.state.userfrnddata[0] ? 
+
+    this.state.userfrnddata.map((data,key) =>
        
                   
                   <a href={"/message/"+sessionStorage.getItem('session_tokenid')+"/"+data.id+"/0"}> 
@@ -250,12 +303,14 @@ return (
                     </div>
                   </div>
 
-                  </a>
+                  </a>               
+  )
+  :
+  
+  'No friends list'
 
-               
-  )}
-                        
-            </div>
+  }                        
+      </div>
              
   );
 
@@ -306,8 +361,7 @@ getConversationRowTo()
 
 // send message form rturn
 
-  sendmessage(){
-
+  sendmessage() {
 
     return (
 
@@ -319,7 +373,7 @@ getConversationRowTo()
               <input type="hidden" name="reciver_id" value={this.props.params.toid} />
               <input type="hidden" name="community_id" value={this.props.params.cid} />
             
-              <input type="text" name="msg_text" className="messagetext" placeholder="Write your message..." />
+              <input type="text" autocomplete="off" onChange={this.handleChange} value={this.state.value} name="msg_text" className="messagetext" placeholder="Write your message..." />
 
               <div className="chat-btn"><button type="submit" className="button--primary">Send</button></div>
               </div>
@@ -339,83 +393,91 @@ getConversationRowTo()
       if(this.state.toid == "") { tostatus = false; }
 
     return (
-      <div className={classnames('About', className)} {...props}>
-	  
-		    <Header  />
+        <div className={classnames('About', className)} {...props}>	  
+		    
+        <Header  />
 	   
         <div className="serachbox chat">
         <div id="frame">
           <div id="sidepanel">
             <div className="user-intro">
-              <div className="avatar">
               
-                <img src={"/images/userpic_"+this.state.userdata.id+".jpg"} alt="" />
-              
+              <div className="avatar">              
+                <img src={"/images/userpic_"+this.state.userdata.id+".jpg"} alt="" />              
               </div>
+              
               <div className="user-intro-info">
                   <h5 className="user-name">{this.state.userdata.name}</h5>
                   <div className="user-sub">{this.state.userdata.location}</div>
                 </div>
               </div>
-            <div className="chat-search">
-              <div className="element-search">
-                <input type="text" placeholder="Search users by name..." />
-              </div>
-            </div>
-           
-           {this.friendslist()}
-
-           {/* mobile view frnd list */}
-           
-           <div className="sidelisting">
              
-             {this.friendslistmobile()}
+              <div className="chat-search">
+                <div className="element-search">
+                  <input type="text" placeholder="Search users by name..." />
+                </div>
+              </div>
+           
+               {this.friendslist()}
 
-           </div>
+               {/* mobile view frnd list */}
+             
+              <div className="sidelisting">
+               
+               {this.friendslistmobile()}
 
-			       {/* end of mobileview */}
+              </div>
 
-            </div>
-          {
+  			       {/* end of mobileview */}
+
+          </div>
+            
+            {
                 tostatus ? 
 
             <div className="content desktopview">           
-           
-                 <div className="contact-profile">
-                <img src="/images/userpic.jpg" alt="" />
-                <p> {this.state.userdatato.name}</p>
-                 </div>              
-
-           
-            <div className="messages">
-              <div className="chat-content-w ps ps--theme_default" data-ps-id="a557f4c5-2722-94a6-2327-cffba33d6a6c">
-                <div className="chat-content">
-                  
+               <div className="contact-profile">
+                  <img src="/images/userpic.jpg" alt="" />
+                  <p> {this.state.userdatato.name}</p>
+               </div>            
+               <div className="messages">
+               <div className="chat-content-w ps ps--theme_default" data-ps-id="a557f4c5-2722-94a6-2327-cffba33d6a6c">
+                <div className="chat-content">                  
 
                 {this.getConversationRowTo()}
 
-                {/*  <div className="chat-message">
-                    <div className="chat-message-content-w">
-                      <div className="chat-message-content">Hi, my name is Mike, I will be happy to assist you</div>
-                    </div>
-                    <div className="chat-message-avatar">
-                      <img src="/images/userpic.jpg" alt=""/>
-                    </div>
-                    <div className="chat-message-date">9:12am</div>
-                  </div>*/}
+                  {/*
+
+                  <div className="chat-message">
+                  <div className="chat-message-content-w">
+                  <div className="chat-message-content">Hi, my name is Mike, I will be happy to assist you</div>
+                  </div>
+                  <div className="chat-message-avatar">
+                  <img src="/images/userpic.jpg" alt=""/>
+                  </div>
+                  <div className="chat-message-date">9:12am</div>
+                  </div>
+
+                  */}
                   
-                  {/*<div className="chat-date-separator"><span>Yesterday</span></div>*/}
+                {/* <div className="chat-date-separator"><span>Yesterday</span></div> */}
 
 
-                {/*  <div className="chat-message self">
+                {/* 
+
+                    <div className="chat-message self">
                     <div className="chat-message-content-w">
-                      <div className="chat-message-content">That walls over which the drawers. Gone studies to titles have audiences of and concepts was motivator</div>
+                      <div className="chat-message-content">
+                        That walls over which the drawers. Gone studies to titles have audiences of and concepts was motivator
+                      </div>
                     </div>
                     <div className="chat-message-date">1:23pm</div>
-                    <div className="chat-message-avatar">
-                      <img src="/images/1.jpg" alt=""/>
+                      <div className="chat-message-avatar">
+                        <img src="/images/1.jpg" alt=""/>
+                      </div>
                     </div>
-                  </div>*/}           
+
+                */}           
 
                   
                 </div>

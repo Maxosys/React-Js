@@ -44,7 +44,8 @@ const Routes = (props) => (
     <Route path="/joined-communities" title="List Of Joined Community Display | iTribe" component={JoinedCommunity} />   
     <Route path="/contact" title="Contact | iTribe" component={Contact} />
     <Route path="/edit-community-details/:cid" title="Edit Community Details | iTribe" component={EditCommunityDetails} />
-    <Route path="/library" title="Library | iTribe" component={Library} />
+    <Route path="/library/:cid" title="Library | iTribe" component={Library} />
+    <Route path="/library/:cid/:libid" title="Library | iTribe" component={Library} />
     <Route path="/login" title="Login | iTribe" component={Login} />   
     <Route path="/logout" title="Logout | iTribe" component={Logout} />
     <Route path="/signup" title="Signup | iTribe" component={Signup} />

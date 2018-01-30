@@ -42,7 +42,7 @@ class MembersCard extends Component {
       //.then(res => res.json())
       .then((communitydata) => {this.setState({ communitydata: communitydata })
 
-          console.log(this.state.communitydata);
+          //console.log(this.state.communitydata);
           const array = communitydata.map(function(x,i){      
                       
           elements.push({"latlong" : x.community_lat_long, "community_name" : x.community_name , "community_id" : x.community_id , "community_tagline" : x.community_tagline , "name" :x.name })
@@ -61,7 +61,7 @@ class MembersCard extends Component {
       //.then(res => res.json())
       .then((memberdata) => {this.setState({ memberdata: memberdata })
 
-                        console.log(this.state.memberdata);                      
+                        //console.log(this.state.memberdata);                      
 
         });
 
@@ -113,7 +113,10 @@ class MembersCard extends Component {
 
     <div className="communtiy-section login-section">
     <div className="container">
-    <div className="title"><h3>My Community</h3><div className="sep"><img src="/images/sep.jpg" /></div></div>
+    <div className="title">
+
+    <h3> <a href={"/members-card/"+this.props.params.cid}> My Community Members </a> |  <a href={"/library/"+this.props.params.cid}> Add Library Component </a> </h3>
+    <div className="sep"><img src="/images/sep.jpg" /></div></div>
         
         <div className="col-sm-7 pull-right">
         <div className="right-section">

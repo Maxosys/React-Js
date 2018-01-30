@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 26, 2018 at 01:18 PM
+-- Generation Time: Jan 30, 2018 at 01:51 PM
 -- Server version: 5.7.14
 -- PHP Version: 7.0.10
 
@@ -73,7 +73,8 @@ CREATE TABLE `itribe_community` (
 
 INSERT INTO `itribe_community` (`community_id`, `community_owner_id`, `community_name`, `community_size`, `community_religion`, `community_spoken`, `community_tagline`, `comminty_desc`, `community_visibility`, `community_status`, `community_location`, `community_lat_long`, `created_at`, `updated_at`) VALUES
 (1, 2, 'Indiaaa', 12, 'Indiaaa', 'Hindi , English ,Punjabi', 'Indiaaa\'s is the best', '', 'on', 1, '', '22.007760283609098_79.31053110326845', '2018-01-12 12:46:13', '2018-01-12 12:46:13'),
-(6, 2, 'China', 10, 'Chinies', 'China,English,Hindi', 'This is a China Community', 'This is a China Community okay.', 'on', 1, '', '35.17824703339206_99.51770094706076', '2018-01-12 13:10:04', '2018-01-12 13:10:04');
+(6, 2, 'China', 10, 'Chinies', 'China,English,Hindi', 'This is a China Community', 'This is a China Community okay.', 'on', 1, '', '35.17824703339206_99.51770094706076', '2018-01-12 13:10:04', '2018-01-12 13:10:04'),
+(7, 28, 'Bindass', 14, 'English', 'English', 'Bindass Play was a Hindi Indian music television channel based in India', 'Bindass Play was a Hindi Indian music television channel based in India, owned by The Walt Disney Company (India). The channel was launched on 1 October 2014 and replaced an HD Bollywood news and entertainment channel, UTV Stars.', 'on', 1, '', '27.218304875732358_73.73877425254724', '2018-01-29 05:54:04', '2018-01-29 05:54:04');
 
 -- --------------------------------------------------------
 
@@ -95,7 +96,13 @@ CREATE TABLE `itribe_commu_invitation` (
 --
 
 INSERT INTO `itribe_commu_invitation` (`invitation_id`, `user_id`, `commu_id`, `user_emailid`, `status`, `created_at`) VALUES
-(11, 2, 1, 'a@gmail.com', '0', '2018-01-23 11:41:39');
+(17, 28, 7, 'ankit.sharma@nanowebtech.com', '0', '2018-01-29 06:26:36'),
+(16, 28, 7, 'ankit.sharma@nanowebtech.com', '0', '2018-01-29 06:26:36'),
+(15, 28, 7, 'ab@gmail.com', '0', '2018-01-29 06:19:09'),
+(14, 28, 7, 'ab@gmail.com', '0', '2018-01-29 06:18:24'),
+(13, 28, 7, 'ab@gmail.com', '0', '2018-01-29 06:13:05'),
+(11, 2, 1, 'a@gmail.com', '0', '2018-01-23 11:41:39'),
+(12, 28, 7, 'ankit.sharma@nanowebtech.com', '0', '2018-01-29 06:02:04');
 
 -- --------------------------------------------------------
 
@@ -122,7 +129,38 @@ INSERT INTO `itribe_commu_members` (`commun_rel_id`, `commun_id`, `user_id`, `us
 (9, 6, 2, '1', '1', '2018-01-17 08:17:38', '2018-01-17 08:17:38'),
 (10, 1, 2, '1', '1', '2018-01-11 18:30:00', '2018-01-11 18:30:00'),
 (12, 1, 26, '1', '1', '2018-01-24 10:46:36', '2018-01-24 10:46:36'),
-(13, 1, 28, '1', '1', '2018-01-25 10:04:20', '2018-01-25 10:04:20');
+(13, 1, 28, '1', '1', '2018-01-25 10:04:20', '2018-01-25 10:04:20'),
+(14, 7, 20, '1', '1', '2018-01-29 06:55:23', '2018-01-29 06:55:23'),
+(16, 6, 28, '1', '1', '2018-01-29 08:04:14', '2018-01-29 08:04:14');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `itribe_library`
+--
+
+CREATE TABLE `itribe_library` (
+  `library_id` int(15) NOT NULL,
+  `community_id` int(15) DEFAULT NULL,
+  `library_subtitle` varchar(256) NOT NULL,
+  `library_desc` text,
+  `user_id` int(15) DEFAULT NULL,
+  `filename` varchar(256) DEFAULT NULL,
+  `file_extension` varchar(256) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` int(15) NOT NULL DEFAULT '1',
+  `originalname` varchar(256) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `itribe_library`
+--
+
+INSERT INTO `itribe_library` (`library_id`, `community_id`, `library_subtitle`, `library_desc`, `user_id`, `filename`, `file_extension`, `created_at`, `updated_at`, `status`, `originalname`) VALUES
+(1, 1, 'This is doc related to user information', 'This is doc related to user information', 2, 'libfiles_1517297688475.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', '2018-01-30 07:34:48', '2018-01-30 07:34:48', 1, 'working.docx'),
+(2, 1, 'ff', 'ff', 2, 'libfiles_1517298159843.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', '2018-01-30 07:42:39', '2018-01-30 07:42:39', 1, 'working.docx'),
+(3, 1, 'info in pdf', 'info in pdf', 2, 'libfiles_1517298224160.pdf', 'application/pdf', '2018-01-30 07:43:44', '2018-01-30 07:43:44', 1, 'reference.pdf');
 
 -- --------------------------------------------------------
 
@@ -154,7 +192,9 @@ INSERT INTO `itribe_messages` (`msg_id`, `sender_id`, `reciver_id`, `msg_text`, 
 (2, 28, 2, 'hi', 1, '2018-01-25 18:26:39', '2018-01-25 18:26:39', NULL, NULL, 1, 'text', ''),
 (3, 28, 2, 'good', 1, '2018-01-25 18:38:04', '2018-01-25 18:38:04', NULL, NULL, 1, 'text', ''),
 (4, 2, 28, 'hi2', 1, '2018-01-25 18:42:30', '2018-01-25 18:42:30', NULL, NULL, 0, 'text', ''),
-(5, 28, 2, 'nice', 1, '2018-01-26 09:32:04', '2018-01-26 09:32:04', NULL, NULL, 0, 'text', '');
+(5, 28, 2, 'nice', 1, '2018-01-26 09:32:04', '2018-01-26 09:32:04', NULL, NULL, 0, 'text', ''),
+(6, 28, 2, 'ok', 1, '2018-01-29 08:10:49', '2018-01-29 08:10:49', NULL, NULL, 6, 'text', ''),
+(7, 28, 2, 'okay', 1, '2018-01-29 08:15:48', '2018-01-29 08:15:48', NULL, NULL, 6, 'text', '');
 
 -- --------------------------------------------------------
 
@@ -217,6 +257,12 @@ ALTER TABLE `itribe_commu_members`
   ADD PRIMARY KEY (`commun_rel_id`);
 
 --
+-- Indexes for table `itribe_library`
+--
+ALTER TABLE `itribe_library`
+  ADD PRIMARY KEY (`library_id`);
+
+--
 -- Indexes for table `itribe_messages`
 --
 ALTER TABLE `itribe_messages`
@@ -241,22 +287,27 @@ ALTER TABLE `itribe_admin`
 -- AUTO_INCREMENT for table `itribe_community`
 --
 ALTER TABLE `itribe_community`
-  MODIFY `community_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `community_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT for table `itribe_commu_invitation`
 --
 ALTER TABLE `itribe_commu_invitation`
-  MODIFY `invitation_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `invitation_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 --
 -- AUTO_INCREMENT for table `itribe_commu_members`
 --
 ALTER TABLE `itribe_commu_members`
-  MODIFY `commun_rel_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `commun_rel_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+--
+-- AUTO_INCREMENT for table `itribe_library`
+--
+ALTER TABLE `itribe_library`
+  MODIFY `library_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 --
 -- AUTO_INCREMENT for table `itribe_messages`
 --
 ALTER TABLE `itribe_messages`
-  MODIFY `msg_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `msg_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 --
 -- AUTO_INCREMENT for table `itribe_users`
 --

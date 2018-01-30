@@ -26,7 +26,6 @@ constructor(props) {
     }
  
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
  }
 
   /*state = {
@@ -204,11 +203,11 @@ constructor(props) {
           <form role="form" onSubmit={this.handleSubmit} >
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-user"></i></span>
-              <input id="login-username" required type="text" className="form-control" name="username" placeholder="Email" />                                        
+              <input id="login-username" onChange = {(event,newValue) => this.setState({username:newValue})} type="text" className="form-control" name="username" placeholder="Email" />                                        
             </div>           
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-lock"></i></span>
-              <input id="login-password" required type="password" className="form-control" name="password" placeholder="Password" />
+              <input id="login-password" type="password" onChange = {(event,newValue) => this.setState({password:newValue})} className="form-control" name="password" placeholder="Password" />
             </div>
             <a className="lostLink" href="#" data-toggle="modal" data-target="#basicModal">Forget password?</a>
             <button className="btn button--primary" type="submit">Log in <i aria-hidden="true" className="fa fa-angle-right"></i> </button>
@@ -225,11 +224,9 @@ constructor(props) {
             <div className="form-group">                 
               <div><Link to="/signup" >Create my iTribe account</Link></div>
               <h1>Users</h1>
-          
-                {/*{this.state.members.map(member =>
-                  <div key={member.id}> {member.id} {member.name} - {member.email}</div>
-                )}*/}
-
+          {this.state.members.map(member =>
+            <div key={member.id}> {member.id} {member.name} - {member.email}</div>
+          )}
             </div> 
           </form>        
         </div>

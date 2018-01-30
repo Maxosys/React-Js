@@ -217,7 +217,7 @@ window.initialize(elements);
                 </button>  
               </span>
             </div>
-          </div>*/}
+          </div>
           <div id="imaginary_container"> 
             <div className="input-group stylish-input-group input-append">
               <input type="text" placeholder=" Filter (community)" className="form-control" />
@@ -228,6 +228,7 @@ window.initialize(elements);
               </span>
             </div>
           </div>
+          */}
         </div>
         <div className="links">
           <a href="/addcommunity">Add my community</a>
@@ -250,8 +251,7 @@ window.initialize(elements);
 
           <ul className="members-name cumnnity-list">
 
-            {
-             
+            {            
 
               this.state.communitydata.map(member =>
             
@@ -262,7 +262,7 @@ window.initialize(elements);
                 <div className="totalmember"> {member.community_tagline} </div>
                 <div className="totalmember">Owner Name : <span className="m-number">{member.name}</span></div>
                
-                <a href={'members-card/'+member.community_id} className="view-detail">View details</a>
+    <a href={'members-card/'+member.community_id} className="view-detail">View details</a>
                 
       { this.state.editSt ?
 

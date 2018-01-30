@@ -41,7 +41,7 @@ class EditProfile extends Component {
          
           var user_name       = data.get('user_name');
           var user_location   = data.get('user_location');   
-          //var userpic         = data.get('userpic');
+         // var userpic         = data.get('userpic');
           var user_id         = data.get('user_id');
 
         //  data.append('file', this.uploadInput.files[0]);
@@ -50,19 +50,23 @@ class EditProfile extends Component {
           var userdata = {
             user_id:user_id,
             user_name:user_name,
-            user_location:user_location                  
+            user_location:user_location
+           /* userpic:userpic*/
+          
           };
 
   /*  const dataa = new FormData();
     dataa.append('file', this.uploadInput.files[0]);*/
+
+     let imageFormData = new FormData();
+
+   // imageFormData.append('imageFile', this.uploadInput.files[0]);
  
  console.log(userdata);
  
             fetch('/api/updateprofile', {
           method: 'POST',
-          body: JSON.stringify({
-          task: userdata
-           }),
+          body: JSON.stringify({task:userdata}),
           headers: {"Content-Type": "application/json"}
           }).then( (response) => {
                   return response.json()    
@@ -122,20 +126,45 @@ class EditProfile extends Component {
          
     let file = e.target.files[0];  
          
+    this.uploadForm(e.target.files[0]);
+
     var _this = this;
          
-    reader.onloadend = function() {              
+    reader.onloadend = function() { 
+
       _this.refs.preview.innerHTML= '<img width="250px" src="'+reader.result+'" />';
     }
          
     reader.readAsDataURL(file);
   }
 
+
+   uploadForm(file){
+        let form = new FormData(this.refs.myForm);
+        form.append('myImage', file);
+        fetch('/api/upload-profile-image', {
+          method: 'POST',
+          body: form
+        }).then(res => console.log('res of fetch', res));
+    }
+
 // end 
 
 
   render() {
     const { className, ...props } = this.props;
+
+    const existsst = true;
+ 
+    var user_pic = sessionStorage.getItem('session_tokenid')+"_userpic.jpg";  
+
+    const userimage = existsst ? 
+    
+    user_pic =  user_pic
+    : 
+    user_pic =  'default.jpg';
+
+
     return (
 	
       <div className={classnames('About', className)} {...props}>
@@ -147,8 +176,19 @@ class EditProfile extends Component {
                   <div className="tab-wrap">
                   <h2 className="head-title">Edit Profile</h2>
 
-          <form role="form" enctype="multipart/form-data" onSubmit={this.handleProfileUpdate}>
+          <form role="form" id="upload_form" ref="myForm"  encType="multipart/form-data" onSubmit={this.handleProfileUpdate}>
+                  
+                  <div className="input-group">
+                   
+                   
                     
+                    <div ref="preview" styleName="display:none;"></div>                   
+             
+                    <img ref="preview" src={"/uploads/users/"+userimage}  width="100" />
+                   
+                    <input ref={(ref) => { this.uploadInput = ref; }} type="file"  onChange={this._changeEvent}  />            
+
+                  </div>
 
                   <div className="input-group">
                   <span className="input-group-addon"><i className="fa fa-user"></i></span>

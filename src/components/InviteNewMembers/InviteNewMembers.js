@@ -33,7 +33,7 @@ class InviteNewMembers extends Component {
      this.setState({value});
   }
 
-  handleInviteSubmit(event) {          
+  handleInviteSubmit(event) {
        
      var userdata = [];
      var valuearr = {};
@@ -50,7 +50,7 @@ class InviteNewMembers extends Component {
 
           var stt =  true;       
 
-        for(let i = 0; i < this.state.count; i++){
+        for(let i = 0; i < this.state.count; i++) {
           
             if(data.get('email'+i) && data.get('email'+i) != "")
             {
@@ -87,7 +87,7 @@ class InviteNewMembers extends Component {
           }).then( (response) => {
                   return response.json()    
                })
-               .then( (json) => {   this.setState({ successmsg: "Community successfully created..Wait for admin approval",showResults:true })           
+               .then( (json) => {   this.setState({ successmsg: "Invitation successfully Sent",showResults:true })           
                   
                     this.onSetResult(json)
                   console.log('parsed json', json)
@@ -100,16 +100,9 @@ class InviteNewMembers extends Component {
     }
 
 
-       onSetResult = (result) => {
+       onSetResult = (result) => {       
         
-        if(result.community_id)
-        {
-          this.setState({ successmsg: " Invitation successfully sent.. ",showResults:true})
-        }
-        else
-        {
-          this.setState({ successmsg: " Not Sent ",showResults:true})
-        }
+          this.setState({ successmsg: " Invitation successfully sent.. ",showResults:true})      
   
     }
 

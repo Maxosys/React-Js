@@ -19,7 +19,77 @@ class PendingRequest extends Component {
       showResults: false,
       currentLocation:""
     };
-         //this.setState({ communitydata: communitydata }            
+         //this.setState({ communitydata: communitydata }        
+    
+    this.onClick = this.onClick.bind(this);
+
+  }
+
+    onClick(event,commun_rel_id,user_id) {
+
+      this.onApproveJoinCommunity(event,commun_rel_id,user_id)
+      .then((joinresp) => {console.log(joinresp) }); 
+      this.delete_join_request(event,commun_rel_id,user_id)
+      .then((joinresp) => {console.log(joinresp) }); 
+
+  }
+
+    delete_join_request(event,commun_rel_id,user_id) {
+
+           console.log(commun_rel_id);
+
+        const response =  fetch('/api/delete_join_request?commun_rel_id='+commun_rel_id+'&user_id='+user_id,{
+        method: 'GET',         
+        headers: {"pragma": "no-cache","cache-control" : "no-cache"}
+        }).then( (response) => {
+        return response.json()
+        })
+        .then( (json) => {
+
+          console.log('parsed json', json);      
+          alert(json.msg);                    
+
+        })
+        .catch( (ex) => {
+        console.log('parsing failed', ex)
+        });
+
+
+     this.callApiGetInvitationByUid(sessionStorage.getItem('session_tokenid'))                     
+          .then((requestdata) => {this.setState({ requestdata: requestdata })
+
+            console.log(this.state.requestdata);   
+          }); 
+
+  }
+
+  onApproveJoinCommunity(event,commun_rel_id,user_id) {
+
+           console.log(commun_rel_id);
+
+        const response =  fetch('/api/approve_join_request?commun_rel_id='+commun_rel_id+'&user_id='+user_id,{
+        method: 'GET',         
+        headers: {"pragma": "no-cache","cache-control" : "no-cache"}
+        }).then( (response) => {
+        return response.json()
+        })
+        .then( (json) => {
+
+          console.log('parsed json', json);      
+          alert(json.msg);                    
+
+        })
+        .catch( (ex) => {
+        console.log('parsing failed', ex)
+        });
+
+
+     this.callApiGetInvitationByUid(sessionStorage.getItem('session_tokenid'))                     
+          .then((requestdata) => {this.setState({ requestdata: requestdata })
+
+            console.log(this.state.requestdata);   
+          }); 
+
   }
 
    componentWillMount() {        
@@ -74,7 +144,7 @@ class PendingRequest extends Component {
       <div className="container">
 
 
-      <div className="title"><h3>My Community Invitations </h3><div className="sep"><img src="images/sep.jpg"/></div></div>
+      <div className="title"><h3>My Community Invitations </h3><div className="sep"><img src="/images/sep.jpg"/></div></div>
       
       { datast? 
 
@@ -86,18 +156,18 @@ class PendingRequest extends Component {
         <img src="images/card.png" />
       </div>
       <div className="info">
-      <div className="name">{member.name}</div>
-        <div className="email"> {member.email} {member.user_id} {member.commun_rel_id} {member.community_name} </div>
+      <div className="name" title={member.email} >{member.name} </div>
+        <div className="email"> {member.community_name} </div>
       </div>
       <div className="pending-req">
-        <a href="javascript:;"><i className="fa fa-times-circle" aria-hidden="true"></i></a>
-        <a href="javascript" className="approve">Approve</a>
+        <a href="javascript:;"  onClick={(event) => { this.delete_join_request(event,member.commun_rel_id,member.user_id) }} ><i className="fa fa-times-circle" aria-hidden="true"></i></a>
+        <a href="javascript:;" className="approve" onClick={(event) => { this.onApproveJoinCommunity(event,member.commun_rel_id,member.user_id) }}>Approve</a>
       </div>
       </div>
       </div>
-          )   
+          )
       :
-      <div className="col-xs-12 col-md-6"> <h3> You Have Not Sent Any Invitation Yet </h3> </div>
+      <div className="col-xs-12 col-md-6"> <h3> Not Found Any Join Pending Request </h3> </div>
     }
 
       {/*<div className="col-xs-12 col-md-6">
@@ -116,10 +186,6 @@ class PendingRequest extends Component {
       </div>
       </div>
       </div>*/}
-
-      
-
-
 
 
       </div>

@@ -22,11 +22,11 @@ export default class Adminheader extends React.Component {
 
       	var  st  = true;
 
-      		if (currentLocation == '/signup' ) {            		
-            		st = true;
-      		  } else {
-      			   st = false; 
-      		  }
+  		if (currentLocation == '/signup' ) {
+        		st = true;
+  		  } else {
+  			   st = false; 
+  		  }
 		
 
       return (
@@ -58,9 +58,11 @@ export default class Adminheader extends React.Component {
             <li><a href="/dashboard/all-community">All Community</a></li>            
           </ul>
         </li>
+        
         {/*<li><a href="">MENU 3</a></li>
         <li><a href="">MENU 4</a></li>
         <li><a href="">MENU 5</a></li>*/}
+
       </ul>
     </div>
   </nav>

@@ -71,6 +71,16 @@ class JoinedCommunity extends Component {
 
   render() {
     const { className, ...props } = this.props;
+
+
+    var st = false;
+
+    if(this.state.communitydata[0])
+    {
+      st = true;
+    }
+
+
     return (
       <div {...props}>
 	    
@@ -102,7 +112,9 @@ class JoinedCommunity extends Component {
           <div className="inner-tilte"><h3>community Cards</h3><div className="sep"><img src="images/sep.jpg" /></div></div>
           <ul className="members-name cumnnity-list">
 
-          {this.state.communitydata.map(member =>
+          { st ? 
+
+          this.state.communitydata.map(member =>
             
              <li key={member.community_id}>        
              <div className="membercard"><img src="images/community-card.png" /></div>
@@ -113,9 +125,14 @@ class JoinedCommunity extends Component {
                 <a href={'members-card/'+member.community_id} className="view-detail">View details</a>               
               </div>
              </li>
-          )}
-           
+          )
+
+           : 'Not Found Any Joined Communities'
+          
+          }
+
           </ul>
+          
         </div>
       </div>
 

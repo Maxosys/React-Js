@@ -11,6 +11,13 @@ $(window).on('load', function() {
 
 $(function () {
 
+
+    $('.libuploadbtn').on('click',function(e) {
+
+     // $('.libfileid').click();
+
+    });
+
      $('.btn-facebook').on('click',function(event) {
 
     FB.login(function(response) {
@@ -45,6 +52,7 @@ $(function () {
             sessionStorage.setItem("ses_user_email", result.email);
             sessionStorage.setItem("session_username", result.name);
             sessionStorage.setItem("session_fbid", result.password);
+            sessionStorage.setItem("session_usertype", result.user_type);
 
             document.location.href = base_url+"/login";          
 

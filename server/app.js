@@ -4,17 +4,18 @@ const app = express();
 //const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const multer = require('multer');
 const path = require('path');
 //var router = express.Router();
 //var mysql = require('mysql');
 const sgMail = require('@sendgrid/mail');
 const SHA256 = require("crypto-js/sha256");
-//const multer = require('multer');
 const fileUpload = require('express-fileupload');
 const cors = require('cors');
+//let multiparty = require('multiparty');
+let fs = require('fs');
 
-//import corsPrefetch from 'cors-prefetch-middleware';
-//import imagesUpload from 'images-upload-middleware';
+
 
 sgMail.setApiKey('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');
 
@@ -37,7 +38,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //app.use(cookieParser());
-app.use(fileUpload());
+//app.use(fileUpload());
+
+//app.use('/upload-image', uploadImage);
 
 /*
 
@@ -59,38 +62,22 @@ app.use(express.static(path.resolve(__dirname, '..', 'build')));
 
 var routers = require('./routers');
 
-//app.use('/',routers);
+app.use('/',routers);
 
-// update profile
+// update profile in router
 
-// Update Updatecommunity  DONE
-
-app.post('/api/notmultiple', function(req, res, next) {
-
-	 db.getConnection(function(err, connection) {
-
-
-	 	console.log(req);
-
-	 });
-
-});
 
 
 app.post('/api/updateprofile', function(req, res, next) {
 
     db.getConnection(function(err, connection) {
 
-            var postBody = req.body.task;    
-           // var postBody = req.files.file;    
-
-            console.log(postBody);  
-            //res.send({ msg: 'Successfully Updated' });     
+           var postBody = req.body.task;    
 
             var user_id             = postBody.user_id;
             var user_name           = postBody.user_name;
             var user_location       = postBody.user_location;          
-
+            var userpic       		= postBody.userpic; 
 
     connection.query('update `itribe_users` set `name` = "'+user_name+'" , `location` = "'+user_location+'"  where id = "'+user_id+'" ', function(err, rows) {
 
@@ -290,7 +277,7 @@ app.get('/api/joincommunity', function(req, res, next) {
 
             var commun_id        = postBody.commun_id;
             var user_id          = postBody.user_id;
-            var user_join_status = 1;
+            var user_join_status = 0;
             var status           = 1;
 
     connection.query("SELECT * FROM itribe_commu_members WHERE user_id='" + user_id + "' and commun_id = '"+ commun_id+"'  LIMIT 1", function(err, rows) {
@@ -337,6 +324,48 @@ app.get('/api/joincommunity', function(req, res, next) {
 });
 
 
+// Delete Join Requests
+
+app.get('/api/delete_join_request', (req, res) => {
+
+	db.getConnection(function(err, connection) {
+
+        var postBody     		= req.query;                 
+        var commun_rel_id       = postBody.commun_rel_id; 
+        var user_id      		= postBody.user_id; 
+
+    connection.query('delete from `itribe_commu_members` where commun_rel_id = "'+commun_rel_id+'"  and user_id = "'+user_id+'" ', function(err, rows) {
+
+     console.log(err); 
+
+           res.send({ msg: 'Successfully Rejected' });   
+        });
+
+    });
+
+});
+
+// Approved Join Requests
+
+app.get('/api/approve_join_request', (req, res) => {
+
+	     db.getConnection(function(err, connection) {
+
+        var postBody     		= req.query;                 
+        var commun_rel_id       = postBody.commun_rel_id; 
+        var user_id      		= postBody.user_id; 
+
+            connection.query('update `itribe_commu_members` set `user_join_status` = "1"  where commun_rel_id = "'+commun_rel_id+'"  and user_id = "'+user_id+'" ', function(err, rows) {
+
+     console.log(err); 
+
+           res.send({ msg: 'Successfully Approved' });   
+        });
+
+    });
+
+});
+
 // Get Invitation Sending Requests
 
 app.get('/api/getpendingjoins', (req, res) => {
@@ -354,7 +383,7 @@ app.get('/api/getpendingjoins', (req, res) => {
    connection.query('SELECT community_id from itribe_community where  itribe_community.community_owner_id = ? ',[user_id], function (err, rows, fields) {
     if (err) throw err;
     
-            
+            console.log(rows);
 
             if (!err && rows.length > 0) {
             
@@ -363,6 +392,10 @@ app.get('/api/getpendingjoins', (req, res) => {
                 });           
 
             var community_id = 1;
+
+//console.log('SELECT * from itribe_commu_invitation ici,itribe_users iu,itribe_community ic where  ic.community_id = ici.commu_id and ici.user_id = iu.id and ici.commu_id IN  ('+commIdArr+') and ici.status = 0');
+ 
+//console.log('SELECT * from itribe_commu_members,itribe_users,itribe_community ic where  ic.community_id = itribe_commu_members.commun_id and itribe_commu_members.user_id = itribe_users.id and itribe_commu_members.commun_id IN  ('+commIdArr+') and user_join_status = 0');
 
           connection.query('SELECT * from itribe_commu_members,itribe_users,itribe_community ic where  ic.community_id = itribe_commu_members.commun_id and itribe_commu_members.user_id = itribe_users.id and itribe_commu_members.commun_id IN  ('+commIdArr+') and user_join_status = 0', function (error, results, fields) {
             if (error) throw error;
@@ -411,8 +444,8 @@ app.get('/api/communitybycidinviteid', (req, res) => {
 app.post('/api/sendinvitaion', function(req, res, next) {
 
     db.getConnection(function(err, connection) {
-            var postBody = req.body.task;            
-
+            
+            var postBody = req.body.task;
                
             var user_id         = postBody[0].user_id;
             var commu_id        = postBody[0].commu_id;
@@ -426,15 +459,13 @@ app.post('/api/sendinvitaion', function(req, res, next) {
     connection.query('SELECT * from itribe_community,itribe_users where  itribe_community.community_id = ? and itribe_community.community_status = ? and itribe_community.community_owner_id = itribe_users.id',[commu_id,'1'], function (error, results, fields) {
     
     if (error) throw error;
-        
 
-    community_name   = results.community_name;
-    community_title  = results.community_tagline;
-    ownername        = results.name;
-
-               
-            for(var i=0 ; i < user_emailidarr.length; i++ )
-            {
+    community_name   = results[0].community_name;
+    community_title  = results[0].community_tagline;
+    ownername        = results[0].name;  
+                
+        for(var i=0 ; i < user_emailidarr.length; i++ )
+        {
                var user_emailid = user_emailidarr[i];             
 
 
@@ -741,7 +772,37 @@ app.post('/api/registerjoin', function(req, res, next) {
 
             if (!err && rows.length > 0) {
                 
-                res.send({ msg: 'Email Id Already exists' });
+                //res.send({ msg: 'Email Id Already exists' });
+
+                        var userid = rows[0].id;
+
+        // insert member
+
+    connection.query('INSERT INTO `itribe_commu_members` (`commun_id`, `user_id`, `user_join_status`, `status`) ' +
+        'VALUES (?, ? , ?, ?)',[community_id, userid, 1, 1], function(err1, rows1) {
+
+        console.log(err1);
+
+        if (rows1.affectedRows) {
+
+        connection.query("SELECT * FROM itribe_commu_members WHERE commun_rel_id='" + rows1.insertId + "' LIMIT 1", function(err, rows) {
+
+        if (!err && rows.length > 0) {
+
+        res.send({ msg: 'Email Id Already exists And Successfully Joined' });
+
+        } else {
+        	
+        	res.json([]);
+
+        }
+
+        });
+
+        }
+
+        });   // end join insert query 
+
 
             } else {
 
@@ -844,7 +905,7 @@ const msg = {
   text: 'Hi, '+name+', Please click on verify link ',
   html: htmlContent,
 };
-sgMail.send(msg);
+//sgMail.send(msg);
 
 
 

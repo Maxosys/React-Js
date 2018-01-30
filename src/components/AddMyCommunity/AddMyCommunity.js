@@ -120,7 +120,7 @@ class AddMyCommunity extends Component {
     var currentLocation = this.props.location.pathname;
 
     return (
-      <div className={classnames('About', className)} {...props}>
+      <div className={classnames('About', className)} {...props} >
          <Header pathn={currentLocation} displaymessage={this.state.successmsg} showResults={this.state.showResults} />
          
          <div className="communtiy-section login-section">
@@ -130,7 +130,7 @@ class AddMyCommunity extends Component {
         <div className="col-sm-7 pull-right">
           <div className="right-section">
             <div className="globe-bg">
-            <div id="earth_div" className="globemapcss"></div>
+             <div id="earth_div" className="globemapcss"></div>
             </div>
           </div>
         </div>
