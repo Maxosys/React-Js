@@ -17,7 +17,11 @@ let fs = require('fs');
 
 
 
-sgMail.setApiKey('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');
+//sgMail.setApiKey('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');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+//console.log(process.env);
 
 var commudata = [];
 
@@ -273,7 +277,7 @@ app.get('/api/joincommunity', function(req, res, next) {
 
         var postBody         = req.query;
             
-        console.log(postBody);
+        //console.log(postBody);
 
             var commun_id        = postBody.commun_id;
             var user_id          = postBody.user_id;
@@ -480,7 +484,7 @@ app.post('/api/sendinvitaion', function(req, res, next) {
 
 var htmlContent = '<html>Hi <br/> <strong> Please click on verify link    </strong></html>';
 
-var joinurl = "http://localhost:3000/joincommunity/"+invitationid+"/"+commu_id;
+var joinurl = base_s_url+"/joincommunity/"+invitationid+"/"+commu_id;
 
 var invitationhtml = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body style="padding: 0; margin:0; background:#F4FBFD;font-family:Arial, Helvetica, sans-serif; font-size:13px; color:#000000; padding:0px 15px 10px 15px;">';
 invitationhtml += '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td align="center" valign="top" style=""><br><br>';
@@ -606,6 +610,16 @@ app.get('/api/allcommunitiesadmin', (req, res) => {
 
 });
 
+// All contact request for admin
+
+app.get('/api/allcontactsadmin', (req, res) => {
+
+    db.query('SELECT * from itribe_contact ', function (error, results, fields) {
+    if (error) throw error;
+    res.send(JSON.stringify(results));
+    });
+
+});
 
 app.get('/api/allcommunities', (req, res) => {
 
@@ -629,7 +643,7 @@ app.post('/api/updatecommunity', function(req, res, next) {
 
             var postBody = req.body.task;    
 
-            console.log(postBody);      
+           // console.log(postBody);      
 
             var community_id         = postBody.community_id;
             var community_owner_id   = postBody.community_owner_id;
@@ -708,6 +722,52 @@ app.post('/api/addcommunity', function(req, res, next) {
 
 });
 
+
+// Add to Contact
+
+app.post('/api/addtocontact', function(req, res, next) {
+
+    db.getConnection(function(err, connection) {
+
+            var postBody 	= req.body.task; 
+
+            var name 		= postBody.name;
+            var subject 	= postBody.subject;
+            var email 		= postBody.email;
+            var message 	= postBody.message;
+            var status 		= 1;          
+
+
+
+     connection.query('INSERT INTO `itribe_contact` (`name`, `subject`, `email`, `message`, `status`) ' +
+      'VALUES (?, ? , ?, ?, ?)',[name, subject, email, message, status], function(err, rows) {
+
+     console.log(err);
+     
+    if (rows.affectedRows) {
+
+      connection.query("SELECT * FROM itribe_contact WHERE contact_id='" + rows.insertId + "' LIMIT 1", function(err, rows) {
+
+        if (!err && rows.length > 0) {
+
+            res.json(rows[0]);
+
+        } else {
+
+            res.json([]);
+        }
+
+    });
+
+            }
+
+        });
+ 
+
+    });
+
+});
+
 // verify email section Done
 
 app.get('/api/verifyemailservice', (req, res) => {
@@ -716,7 +776,7 @@ app.get('/api/verifyemailservice', (req, res) => {
         
     var postBody     = req.query;   
 
-    console.log("request",postBody);       
+    //console.log("request",postBody);       
 
     var user_id      = postBody.uid;    
     var hashkey      = postBody.hashkey;     
@@ -755,7 +815,7 @@ app.post('/api/registerjoin', function(req, res, next) {
 
         var postBody = req.body.task;    
 
-        console.log(postBody.username);
+       // console.log(postBody.username);
         // res.json(postBody);
 
         var name     = postBody.username;
@@ -896,18 +956,17 @@ app.post('/api/register', function(req, res, next) {
 
         if (!err && rows.length > 0) {
 
-var htmlContent = '<html>Hi, '+name+' , <br/> <strong> Please click on verify link  <a href="http://localhost:3000/verifyemail/'+userid+'/'+password+' " > VERIFY </a>  </strong></html>';
+                var htmlContent = '<html>Hi, '+name+' , <br/> <strong> Please click on verify link  <a href="'+base_s_url+'/verifyemail/'+userid+'/'+password+' " > VERIFY </a>  </strong></html>';
 
-const msg = {
-  to: email,
-  from: 'noreply@itribe.com',
-  subject: 'iTribe Verification Mail',
-  text: 'Hi, '+name+', Please click on verify link ',
-  html: htmlContent,
-};
-//sgMail.send(msg);
+                const msg = {
+                to: email,
+                from: 'noreply@itribe.com',
+                subject: 'iTribe Verification Mail',
+                text: 'Hi, '+name+', Please click on verify link ',
+                html: htmlContent,
+                };
 
-
+                sgMail.send(msg);
 
             res.json(rows[0]);
 
@@ -917,7 +976,6 @@ const msg = {
         }
 
     });
-
             }
 
         });
@@ -1014,7 +1072,7 @@ app.post('/api/login', function(req, res, next) {
 
         connection.query('SELECT * from itribe_users where email="'+email+'" and password="'+inckey+'" and status="1"', function(err, rows) {
 
-          console.log('SELECT * from itribe_users where email="'+email+'" and password="'+inckey+'" and status="1"');
+          
           console.log(err);
 
             if (!err && rows.length > 0) {

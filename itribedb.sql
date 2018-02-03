@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jan 30, 2018 at 01:51 PM
+-- Generation Time: Feb 03, 2018 at 12:53 PM
 -- Server version: 5.7.14
 -- PHP Version: 7.0.10
 
@@ -131,7 +131,32 @@ INSERT INTO `itribe_commu_members` (`commun_rel_id`, `commun_id`, `user_id`, `us
 (12, 1, 26, '1', '1', '2018-01-24 10:46:36', '2018-01-24 10:46:36'),
 (13, 1, 28, '1', '1', '2018-01-25 10:04:20', '2018-01-25 10:04:20'),
 (14, 7, 20, '1', '1', '2018-01-29 06:55:23', '2018-01-29 06:55:23'),
-(16, 6, 28, '1', '1', '2018-01-29 08:04:14', '2018-01-29 08:04:14');
+(16, 6, 28, '1', '1', '2018-01-29 08:04:14', '2018-01-29 08:04:14'),
+(17, 7, 2, '1', '1', '2018-02-03 11:00:37', '2018-02-03 11:00:37');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `itribe_contact`
+--
+
+CREATE TABLE `itribe_contact` (
+  `contact_id` int(15) NOT NULL,
+  `name` varchar(256) DEFAULT NULL,
+  `email` varchar(256) DEFAULT NULL,
+  `subject` varchar(256) DEFAULT NULL,
+  `message` text,
+  `status` int(15) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `itribe_contact`
+--
+
+INSERT INTO `itribe_contact` (`contact_id`, `name`, `email`, `subject`, `message`, `status`, `created_at`) VALUES
+(1, 'Ankit', 'ankit.sharma@nanowebtech.com', 'Community', NULL, 1, '2018-02-02 15:18:07'),
+(2, 'Ankit', 'ankit.sharma@nanowebtech.com', 'Chaina Community', NULL, 1, '2018-02-02 15:18:41');
 
 -- --------------------------------------------------------
 
@@ -160,7 +185,8 @@ CREATE TABLE `itribe_library` (
 INSERT INTO `itribe_library` (`library_id`, `community_id`, `library_subtitle`, `library_desc`, `user_id`, `filename`, `file_extension`, `created_at`, `updated_at`, `status`, `originalname`) VALUES
 (1, 1, 'This is doc related to user information', 'This is doc related to user information', 2, 'libfiles_1517297688475.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', '2018-01-30 07:34:48', '2018-01-30 07:34:48', 1, 'working.docx'),
 (2, 1, 'ff', 'ff', 2, 'libfiles_1517298159843.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', '2018-01-30 07:42:39', '2018-01-30 07:42:39', 1, 'working.docx'),
-(3, 1, 'info in pdf', 'info in pdf', 2, 'libfiles_1517298224160.pdf', 'application/pdf', '2018-01-30 07:43:44', '2018-01-30 07:43:44', 1, 'reference.pdf');
+(3, 1, 'info in pdf', 'info in pdf', 2, 'libfiles_1517298224160.pdf', 'application/pdf', '2018-01-30 07:43:44', '2018-01-30 07:43:44', 1, 'reference.pdf'),
+(4, 1, 'This is video', 'this is video', 2, 'libfiles_1517555202815.mp4', 'video/mp4', '2018-02-02 07:06:42', '2018-02-02 07:06:42', 1, 'big_buck_bunny_720p_2mb.mp4');
 
 -- --------------------------------------------------------
 
@@ -194,7 +220,8 @@ INSERT INTO `itribe_messages` (`msg_id`, `sender_id`, `reciver_id`, `msg_text`, 
 (4, 2, 28, 'hi2', 1, '2018-01-25 18:42:30', '2018-01-25 18:42:30', NULL, NULL, 0, 'text', ''),
 (5, 28, 2, 'nice', 1, '2018-01-26 09:32:04', '2018-01-26 09:32:04', NULL, NULL, 0, 'text', ''),
 (6, 28, 2, 'ok', 1, '2018-01-29 08:10:49', '2018-01-29 08:10:49', NULL, NULL, 6, 'text', ''),
-(7, 28, 2, 'okay', 1, '2018-01-29 08:15:48', '2018-01-29 08:15:48', NULL, NULL, 6, 'text', '');
+(7, 28, 2, 'okay', 1, '2018-01-29 08:15:48', '2018-01-29 08:15:48', NULL, NULL, 6, 'text', ''),
+(8, 2, 28, 'ok', 1, '2018-02-02 10:45:57', '2018-02-02 10:45:57', NULL, NULL, 0, 'text', '');
 
 -- --------------------------------------------------------
 
@@ -257,6 +284,12 @@ ALTER TABLE `itribe_commu_members`
   ADD PRIMARY KEY (`commun_rel_id`);
 
 --
+-- Indexes for table `itribe_contact`
+--
+ALTER TABLE `itribe_contact`
+  ADD PRIMARY KEY (`contact_id`);
+
+--
 -- Indexes for table `itribe_library`
 --
 ALTER TABLE `itribe_library`
@@ -297,17 +330,22 @@ ALTER TABLE `itribe_commu_invitation`
 -- AUTO_INCREMENT for table `itribe_commu_members`
 --
 ALTER TABLE `itribe_commu_members`
-  MODIFY `commun_rel_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `commun_rel_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+--
+-- AUTO_INCREMENT for table `itribe_contact`
+--
+ALTER TABLE `itribe_contact`
+  MODIFY `contact_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 --
 -- AUTO_INCREMENT for table `itribe_library`
 --
 ALTER TABLE `itribe_library`
-  MODIFY `library_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `library_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `itribe_messages`
 --
 ALTER TABLE `itribe_messages`
-  MODIFY `msg_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `msg_id` int(15) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 --
 -- AUTO_INCREMENT for table `itribe_users`
 --

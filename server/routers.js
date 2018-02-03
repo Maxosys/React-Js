@@ -243,13 +243,13 @@ router.get('/api/getlibdatabyid', (req, res) => {
       var commIdArr = [];
 
 
-    connection.query("SELECT * FROM itribe_library il,itribe_users iu WHERE il.user_id = iu.id and il.library_id='"+cid+"' ", function(err, rows) {
+    connection.query("SELECT * FROM itribe_library il,itribe_users iu WHERE il.user_id = iu.id and il.library_id='"+libid+"' ", function(err, rows) {
     
       console.log(err);
 
     //res.send({ express: 'Hello From Express' });
             
-            if (!err && rows.length > 0) {                
+            if (!err && rows.length > 0) {
 
             res.json(rows);
 
