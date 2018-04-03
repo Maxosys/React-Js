@@ -25,7 +25,8 @@
     "react-images-uploader": "^1.1.0",
     "react-router": "^3.2.0",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.0.17"
+    "react-scripts": "1.0.17",
+    "simple-node-logger": "^0.93.37"
   },
   "scripts": {
     "start": "react-scripts start",

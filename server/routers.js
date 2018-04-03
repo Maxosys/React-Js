@@ -73,6 +73,8 @@ router.post('/api/upload-profile-image', function(req, res, next) {
     }
   });
 
+connection.release();
+
    });
 
 });
@@ -115,7 +117,7 @@ const uploadcompo = multer({
 // Check File Type
 function checkFileTypeLib(file, cb){
   // Allowed ext
-  const filetypes = /jpeg|jpg|png|gif|pdf|doc|docx|mp4|mp3/;
+  const filetypes = /jpeg|jpg|png|gif|pdf|doc|docx|mp4/;
   // Check ext
   const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
   // Check mime
@@ -190,6 +192,8 @@ router.post('/api/addlibcomponent', function(req, res, next) {
     }
   });
 
+connection.release();
+
    });
 
 });
@@ -225,6 +229,8 @@ router.get('/api/getlibdata', (req, res) => {
             }
       });
   
+  connection.release();
+
     });
 
 });
@@ -259,6 +265,9 @@ router.get('/api/getlibdatabyid', (req, res) => {
                 res.json([]);
             }
       });
+
+    connection.release();
+    
   });
 });
 

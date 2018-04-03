@@ -1,72 +1,48 @@
-// server/app.js
 const express = require('express');
 const app = express();
-//const cookieParser = require('cookie-parser');
+
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const multer = require('multer');
 const path = require('path');
-//var router = express.Router();
-//var mysql = require('mysql');
 const sgMail = require('@sendgrid/mail');
 const SHA256 = require("crypto-js/sha256");
-const fileUpload = require('express-fileupload');
 const cors = require('cors');
-//let multiparty = require('multiparty');
 let fs = require('fs');
 
 
+var base_s_url = "http://localhost:3000";
+var base_url   = "http://localhost:3000";
 
-//sgMail.setApiKey('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');
+sgMail.setApiKey('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');
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
-
-//console.log(process.env);
-
-var commudata = [];
-
+//sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 //connect to mysql don't use var tomake it global
 
 var db = require('./dbconnection'); //reference of dbconnection.js
 
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), {flags: 'a'});
+
 // Setup logger
 app.use(morgan(':remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] :response-time ms'));
 
-
+// setup the logger
+app.use(morgan('combined', {stream: accessLogStream}))
 app.use(cors());
-
 
 //app.use(bodyParser.json({limit:1024102420}));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//app.use(cookieParser());
-//app.use(fileUpload());
 
-//app.use('/upload-image', uploadImage);
+const routers = require('./routers');
 
-/*
-
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: true }));
-app.use( bodyparser.raw({limit: '50mb'}) );
-app.use(bodyparser.json({limit: '50mb'}));
-app.use(bodyparser.urlencoded({limit: '50mb', extended: true}));
-app.use( bodyparser.text({
-    type : 'application/text-enriched', 
-    limit: '50mb'
-}) ); 
-
-*/
+app.use('/',routers);
 
 // Serve static assets
 app.use(express.static(path.resolve(__dirname, '..', 'build')));
 
-
-var routers = require('./routers');
-
-app.use('/',routers);
 
 // update profile in router
 
@@ -81,15 +57,18 @@ app.post('/api/updateprofile', function(req, res, next) {
             var user_id             = postBody.user_id;
             var user_name           = postBody.user_name;
             var user_location       = postBody.user_location;          
-            var userpic       		= postBody.userpic; 
+            var about_you       	= postBody.about_you; 
 
-    connection.query('update `itribe_users` set `name` = "'+user_name+'" , `location` = "'+user_location+'"  where id = "'+user_id+'" ', function(err, rows) {
+    connection.query('update `itribe_users` set `name` = "'+user_name+'" , `location` = "'+user_location+'" , `about_you` = "'+about_you+'" where id = "'+user_id+'" ', function(err, rows) {
 
      console.log(err); 
 
            res.send({ msg: 'Successfully Updated' });   
         });
  
+    
+
+        connection.release();
 
     });
 
@@ -97,6 +76,36 @@ app.post('/api/updateprofile', function(req, res, next) {
 
 // end 
 
+// get Total Msg Count
+
+app.get('/api/msgtotalcount', (req, res) => {
+
+     db.getConnection(function(err, connection) {
+
+        var postBody     = req.query;    
+        var userid       = postBody.userid;   
+   
+
+    connection.query("SELECT count(*) as unreadmsg FROM itribe_messages WHERE  reciver_id = '"+userid+"' and  status = '0' ", function(err, rows) {
+    
+        //console.log(err);   
+            
+            if (!err && rows.length > 0) {
+
+              res.json(rows);
+
+            }
+            else
+            {
+                res.json([]);
+            }
+
+            connection.release();
+        });
+    });
+});
+
+// end
 
 // get message Friends list
 
@@ -137,6 +146,8 @@ app.get('/api/callApiGetFriendList', (req, res) => {
                 res.json({ msg: 'Not Found Any Friend' });
             }   
        });
+
+    connection.release();
  });
 
 });
@@ -155,8 +166,8 @@ app.get('/api/getConversationSR', (req, res) => {
     	var result = [];
     	var commIdArr = [];
 
-console.log("SELECT * FROM itribe_messages WHERE (sender_id='" + sender_id + "' and reciver_id = '"+reciver_id+"') OR (sender_id='" + reciver_id + "' and reciver_id = '"+sender_id+"') and  status = '1' ");
-    connection.query("SELECT * FROM itribe_messages WHERE (sender_id='" + sender_id + "' and reciver_id = '"+reciver_id+"') OR (sender_id='" + reciver_id + "' and reciver_id = '"+sender_id+"') and  status = '1' ", function(err, rows) {
+//console.log("SELECT * FROM itribe_messages WHERE (sender_id='" + sender_id + "' and reciver_id = '"+reciver_id+"') OR (sender_id='"+reciver_id+"' and reciver_id = '"+sender_id+"' ) and  status = '1' ");
+    connection.query("SELECT * FROM `itribe_messages` WHERE (sender_id='"+sender_id+"' AND reciver_id = '"+reciver_id+"' ) OR ( sender_id="+reciver_id+" AND reciver_id = '"+sender_id+"' ) ", function(err, rows) {
     
     	console.log(err);
 
@@ -164,6 +175,13 @@ console.log("SELECT * FROM itribe_messages WHERE (sender_id='" + sender_id + "' 
             
             if (!err && rows.length > 0) {                
 
+// update status 0 to 1 for unread to read
+   
+    connection.query("update `itribe_messages` set `status` = '1' WHERE (sender_id='"+sender_id+"' AND reciver_id = '"+reciver_id+"') OR ( sender_id='"+reciver_id+"' AND reciver_id = '"+sender_id+"' ) ", function(err1, rows1) {
+
+     console.log(err1); 
+              
+    });
         	  res.json(rows);
 
             }
@@ -172,6 +190,9 @@ console.log("SELECT * FROM itribe_messages WHERE (sender_id='" + sender_id + "' 
                 res.json([]);
             }
     	});
+
+    connection.release();
+
 	});
 });
 
@@ -218,6 +239,8 @@ app.post('/api/addmessage', function(req, res, next) {
         });
  
 
+     connection.release();
+
     });
 
 });
@@ -249,7 +272,7 @@ app.get('/api/joinedcommunitybyuid', (req, res) => {
 
             var community_id = 1;
 
-          db.query('SELECT * from itribe_community,itribe_users where  itribe_community.community_owner_id = itribe_users.id and itribe_community.community_id IN  ('+commIdArr+') ', function (error, results, fields) {
+          connection.query('SELECT * from itribe_community,itribe_users where  itribe_community.community_owner_id = itribe_users.id and itribe_community.community_id IN  ('+commIdArr+') ', function (error, results, fields) {
             if (error) throw error;
                 
                 res.send(JSON.stringify(results));
@@ -265,6 +288,9 @@ app.get('/api/joinedcommunitybyuid', (req, res) => {
             }
 
     });
+
+    connection.release();
+
 });
 });
 
@@ -323,6 +349,8 @@ app.get('/api/joincommunity', function(req, res, next) {
 
     }); 
 
+    connection.release();
+
     });
 
 });
@@ -345,6 +373,9 @@ app.get('/api/delete_join_request', (req, res) => {
            res.send({ msg: 'Successfully Rejected' });   
         });
 
+    
+    connection.release();
+
     });
 
 });
@@ -365,6 +396,9 @@ app.get('/api/approve_join_request', (req, res) => {
 
            res.send({ msg: 'Successfully Approved' });   
         });
+
+    
+        connection.release();
 
     });
 
@@ -421,6 +455,8 @@ app.get('/api/getpendingjoins', (req, res) => {
     
     }); //3
 
+   connection.release();
+
    }); //2
 
 }); // 1
@@ -430,15 +466,19 @@ app.get('/api/getpendingjoins', (req, res) => {
 
 app.get('/api/communitybycidinviteid', (req, res) => {
 
+db.getConnection(function(err, connection) {
     var postBody     = req.query;                 
     var community_id = postBody.cid;   
     var inviteid     = postBody.inviteid;   
 
-    db.query('SELECT * from itribe_commu_invitation, itribe_community,itribe_users where itribe_commu_invitation.invitation_id= ? and  itribe_commu_invitation.commu_id = itribe_community.community_id and itribe_community.community_owner_id = itribe_users.id',[inviteid,'1'], function (error, results, fields) {
+    connection.query('SELECT * from itribe_commu_invitation, itribe_community,itribe_users where itribe_commu_invitation.invitation_id= ? and  itribe_commu_invitation.commu_id = itribe_community.community_id and itribe_community.community_owner_id = itribe_users.id',[inviteid,'1'], function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
     });
      
+connection.release();
+
+     });
 
 });
 
@@ -501,7 +541,7 @@ invitationhtml += '<br> <br> © Copyright 2018 - iTribe </div></td></tr></table>
 
 const msg = {
   to: user_emailid,
-  from: 'noreply@itribe.com',
+  from: 'info@itribe.us',
   subject: 'iTribe Community Invitation Mail',
   text: 'Welcome to iTribe Dear Community Title Community Name Owner Name Copyright 2018 - iTribe ',
   html: invitationhtml,
@@ -525,7 +565,7 @@ const msg = {
         });          
         
        
-
+connection.release();
 
     });
 
@@ -537,13 +577,19 @@ const msg = {
 
 app.get('/api/communitybysearch', (req, res) => {
 
+db.getConnection(function(err, connection) {
+
     var postBody           = req.query;                 
     var community_tagline = postBody.cstr;  
     
 
-   db.query('SELECT * from itribe_community,itribe_users where  itribe_community.community_tagline LIKE "%'+community_tagline+'%" and itribe_community.community_status = 1 and itribe_community.community_owner_id = itribe_users.id ', function (error, results, fields) {
+   connection.query('SELECT * from itribe_community,itribe_users where  (itribe_community.community_tagline LIKE "%'+community_tagline+'%" || itribe_community.community_name LIKE "%'+community_tagline+'%"  ) and itribe_community.community_status = 1 and itribe_community.community_owner_id = itribe_users.id ', function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
+    });
+
+   connection.release();
+
     });
 
 });
@@ -553,13 +599,19 @@ app.get('/api/communitybysearch', (req, res) => {
 
 app.get('/api/communitybyuid', (req, res) => {
 
+db.getConnection(function(err, connection) {
+
     var postBody     = req.query;                 
     var community_owner_id = postBody.uid;  
     
 
-   db.query('SELECT * from itribe_community,itribe_users where  itribe_community.community_owner_id = ? and itribe_community.community_status = ? and itribe_community.community_owner_id = itribe_users.id',[community_owner_id,'1'], function (error, results, fields) {
+   connection.query('SELECT * from itribe_community,itribe_users where  itribe_community.community_owner_id = ? and itribe_community.community_status = ? and itribe_community.community_owner_id = itribe_users.id',[community_owner_id,'1'], function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
+    });
+
+   connection.release();
+
     });
 
 });
@@ -568,15 +620,19 @@ app.get('/api/communitybyuid', (req, res) => {
 
 app.get('/api/comm_mem_by_cid', (req, res) => {
 
+db.getConnection(function(err, connection) {
     var postBody     = req.query;                 
     var community_id = postBody.cid; 
     
 
-    db.query('SELECT * from itribe_commu_members icm ,itribe_community ic ,itribe_users iu where  icm.commun_id = ? and icm.commun_id = ic.community_id and icm.user_id = iu.id and user_join_status=1',[community_id], function (error, results, fields) {
+    connection.query('SELECT * from itribe_commu_members icm ,itribe_community ic ,itribe_users iu where  icm.commun_id = ? and icm.commun_id = ic.community_id and icm.user_id = iu.id and user_join_status=1',[community_id], function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
     });
      
+     connection.release();
+
+    });
 
 });
 
@@ -584,15 +640,19 @@ app.get('/api/comm_mem_by_cid', (req, res) => {
 
 app.get('/api/communitybyid', (req, res) => {
 
+db.getConnection(function(err, connection) {
+
     var postBody     = req.query;                 
     var community_id = postBody.cid;   
 
-    db.query('SELECT * from itribe_community,itribe_users where  itribe_community.community_id = ? and itribe_community.community_status = ? and itribe_community.community_owner_id = itribe_users.id',[community_id,'1'], function (error, results, fields) {
+    connection.query('SELECT * from itribe_community,itribe_users where  itribe_community.community_id = ? and itribe_community.community_status = ? and itribe_community.community_owner_id = itribe_users.id',[community_id,'1'], function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
     });
      
+    connection.release();
 
+    });
 });
 
 // list of all communities DONE ... Use in admin pending...
@@ -600,7 +660,8 @@ app.get('/api/communitybyid', (req, res) => {
 
 app.get('/api/allcommunitiesadmin', (req, res) => {
 
-    db.query('SELECT * from itribe_community,itribe_users  where   itribe_community.community_owner_id = itribe_users.id ', function (error, results, fields) {
+db.getConnection(function(err, connection) {
+    connection.query('SELECT * from itribe_community,itribe_users  where   itribe_community.community_owner_id = itribe_users.id ', function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
     });
@@ -608,22 +669,32 @@ app.get('/api/allcommunitiesadmin', (req, res) => {
     //res.send({ express: 'Hello From Express' });
     //res.send({ one: 'Express 1', two : 'Express 2', three : 'Express 3' , four : 'Express 4' });
 
+    connection.release();
+
+    });
 });
 
 // All contact request for admin
 
 app.get('/api/allcontactsadmin', (req, res) => {
 
-    db.query('SELECT * from itribe_contact ', function (error, results, fields) {
+db.getConnection(function(err, connection) {
+
+    connection.query('SELECT * from itribe_contact ', function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
     });
 
+    connection.release();
+
+    });
 });
 
 app.get('/api/allcommunities', (req, res) => {
 
-    db.query('SELECT * from itribe_community,itribe_users  where  community_visibility = ? and community_status = ? and itribe_community.community_owner_id = itribe_users.id ',['on','1'], function (error, results, fields) {
+ db.getConnection(function(err, connection) {
+
+    connection.query('SELECT * from itribe_community,itribe_users  where  community_visibility = ? and community_status = ? and itribe_community.community_owner_id = itribe_users.id ',['on','1'], function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
     });
@@ -631,6 +702,8 @@ app.get('/api/allcommunities', (req, res) => {
     //res.send({ express: 'Hello From Express' });
     //res.send({ one: 'Express 1', two : 'Express 2', three : 'Express 3' , four : 'Express 4' });
 
+    connection.release();
+    });
 });
 
 
@@ -666,6 +739,8 @@ app.post('/api/updatecommunity', function(req, res, next) {
            res.send({ msg: 'Successfully Updated' });   
         });
  
+        
+        connection.release();
 
     });
 
@@ -704,6 +779,34 @@ app.post('/api/addcommunity', function(req, res, next) {
 
         if (!err && rows.length > 0) {
 
+
+var joinurl = base_s_url+"/joincommunity";
+
+var invitationhtml = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body style="padding: 0; margin:0; background:#F4FBFD;font-family:Arial, Helvetica, sans-serif; font-size:13px; color:#000000; padding:0px 15px 10px 15px;">';
+invitationhtml += '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td align="center" valign="top" style=""><br><br>';
+invitationhtml += '<table width="600" border="0" cellspacing="0" cellpadding="0"><tr><td align="center" valign="top" bgcolor="#fff" style="border-radius: 0.375rem; box-shadow: 12px 15px 20px 0 rgba(46, 61, 73, 0.15); padding:50px " >';
+invitationhtml += '<div><img src="/images/logo.jpg"></div><br>';
+invitationhtml += '<div style=" border-bottom: 1px solid #ddd; border-top: 1px solid #ddd; color: #000; font-size: 48px; padding: 4px 0;"><b>Welcome to iTribe</b></div> <br>';
+invitationhtml += '<div><h2 style="font-size: 17px;  text-align: left;">Dear Admin,</h2></div>';
+invitationhtml += '<div style="text-align: left;">';
+invitationhtml += '<strong> Please confirme my community </strong>  <br>  <br>';
+invitationhtml += 'Community Title: '+community_tagline+'  <br>  <br>';
+invitationhtml += 'Community Name: '+community_name+'  <br>   <br>';
+invitationhtml += '<br><br><div></div>';
+invitationhtml += '<br> <br> © Copyright 2018 - iTribe </div></td></tr></table><br><br></td></tr></table></body></html>';
+
+const msg = {
+  to: 'ankit.sharma@nanowebtech.com',
+  from: 'info@itribe.us',
+  subject: 'iTribe Community Admin Approval Mail',
+  text: 'Welcome to iTribe Dear Community Title Community Name Owner Name Copyright 2018 - iTribe ',
+  html: invitationhtml,
+};
+
+        sgMail.send(msg);
+
+
+
             res.json(rows[0]);
 
         } else {
@@ -717,6 +820,8 @@ app.post('/api/addcommunity', function(req, res, next) {
 
         });
  
+        
+        connection.release();
 
     });
 
@@ -750,6 +855,35 @@ app.post('/api/addtocontact', function(req, res, next) {
 
         if (!err && rows.length > 0) {
 
+
+
+            var htmlContent = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body style="padding: 0; margin:0; background:#F4FBFD;font-family:Arial, Helvetica, sans-serif; font-size:13px; color:#000000; padding:0px 15px 10px 15px;">';
+htmlContent += '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td align="center" valign="top" style=""><br><br>';
+htmlContent += '<table width="600" border="0" cellspacing="0" cellpadding="0"><tr><td align="center" valign="top" bgcolor="#fff" style="border-radius: 0.375rem; box-shadow: 12px 15px 20px 0 rgba(46, 61, 73, 0.15); padding:50px " >';
+htmlContent += '<div><img src="/images/logo.jpg"></div><br>';
+htmlContent += '<div style=" border-bottom: 1px solid #ddd; border-top: 1px solid #ddd; color: #000; font-size: 48px; padding: 4px 0;"><b>Welcome to iTribe</b></div> <br>';
+htmlContent += '<div><h2 style="font-size: 17px;  text-align: left;">Dear iTribe,</h2></div>';
+htmlContent += '<div style="text-align: left;">';
+htmlContent += '<strong> Name </strong> : '+name+' <br>  <br>';
+htmlContent += '<strong> Subject </strong> : '+subject+' <br>  <br>';
+htmlContent += '<strong> Email </strong> : '+email+' <br>  <br>';
+htmlContent += '<strong> Message </strong> : '+message+' <br>  <br>';
+htmlContent += '<br><br><div></div>';
+htmlContent += '<br> <br> © Copyright 2018 - iTribe </div></td></tr></table><br><br></td></tr></table></body></html>';
+
+
+                const msg = {
+                to: 'info@itribe.us',
+                from: email,
+                subject: 'iTribe Help Contact Request Mail',
+                text: 'Dear iTribe, Name Subject Email Message',
+                html: htmlContent,
+                };
+
+                sgMail.send(msg);
+
+
+
             res.json(rows[0]);
 
         } else {
@@ -763,6 +897,7 @@ app.post('/api/addtocontact', function(req, res, next) {
 
         });
  
+     connection.release();
 
     });
 
@@ -788,9 +923,10 @@ app.get('/api/verifyemailservice', (req, res) => {
     
      if (!err && rows.length > 0) {
 
-        db.query("update itribe_users set status = '1'  WHERE id = " + user_id + " and password = '"+hashkey+"' ", function (error, results, fields) {
+        connection.query("update itribe_users set status = '1'  WHERE id = " + user_id + " and password = '"+hashkey+"' ", function (error, results, fields) {
         if (error) throw error;            
-            res.send({ msg: 'Successfully verified' });        
+            //res.send({ msg: 'Successfully verified' });        
+            res.send(rows);        
         });
      }
        else
@@ -799,7 +935,10 @@ app.get('/api/verifyemailservice', (req, res) => {
      }       
 
     });
- 
+    
+    
+    connection.release();
+
   });
 
 });
@@ -912,6 +1051,8 @@ app.post('/api/registerjoin', function(req, res, next) {
         } // end else account already exists condition
     });
 
+    connection.release();
+
   });
 
 });
@@ -956,13 +1097,25 @@ app.post('/api/register', function(req, res, next) {
 
         if (!err && rows.length > 0) {
 
-                var htmlContent = '<html>Hi, '+name+' , <br/> <strong> Please click on verify link  <a href="'+base_s_url+'/verifyemail/'+userid+'/'+password+' " > VERIFY </a>  </strong></html>';
+               // var htmlContent = '<html>Hi, '+name+' , <br/> <strong> Please click on verify link  <a href="'+base_s_url+'/verifyemail/'+userid+'/'+password+' " > VERIFY </a>  </strong></html>';
+
+            var htmlContent = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body style="padding: 0; margin:0; background:#F4FBFD;font-family:Arial, Helvetica, sans-serif; font-size:13px; color:#000000; padding:0px 15px 10px 15px;">';
+htmlContent += '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td align="center" valign="top" style=""><br><br>';
+htmlContent += '<table width="600" border="0" cellspacing="0" cellpadding="0"><tr><td align="center" valign="top" bgcolor="#fff" style="border-radius: 0.375rem; box-shadow: 12px 15px 20px 0 rgba(46, 61, 73, 0.15); padding:50px " >';
+htmlContent += '<div><img src="/images/logo.jpg"></div><br>';
+htmlContent += '<div style=" border-bottom: 1px solid #ddd; border-top: 1px solid #ddd; color: #000; font-size: 48px; padding: 4px 0;"><b>Welcome to iTribe</b></div> <br>';
+htmlContent += '<div><h2 style="font-size: 17px;  text-align: left;">Dear '+name+',</h2></div>';
+htmlContent += '<div style="text-align: left;">';
+htmlContent += '<strong> Please click on verify link</strong> <br>  <br>';
+htmlContent += '<br><br><div><a href="'+base_s_url+'/verifyemail/'+userid+'/'+password+'" style="color: #3ba700; font-size: 16px; text-transform: capitalize;"> VERIFY </a></div>';
+htmlContent += '<br> <br> © Copyright 2018 - iTribe </div></td></tr></table><br><br></td></tr></table></body></html>';
+
 
                 const msg = {
                 to: email,
-                from: 'noreply@itribe.com',
-                subject: 'iTribe Verification Mail',
-                text: 'Hi, '+name+', Please click on verify link ',
+                from: 'info@itribe.us',
+                subject: 'iTribe Email Verification Mail',
+                text: 'Dear, '+name+', Please click on verify link ',
                 html: htmlContent,
                 };
 
@@ -983,6 +1136,8 @@ app.post('/api/register', function(req, res, next) {
         
         } // end else account already exists condition
     });
+
+    connection.release();
 
   });
 
@@ -1048,7 +1203,114 @@ app.post('/api/registerfb', function(req, res, next) {
         } // end else account already exists condition
     });
 
+    connection.release();
+
   });
+
+});
+
+
+// newpassword
+
+
+app.post('/api/newpasswordreq', (req, res) => {
+
+    db.getConnection(function(err, connection) {
+        
+    var postBody     = req.body.task;   
+
+    //console.log("request",postBody);       
+
+    var user_id      = postBody.uid;    
+    var hashkey      = postBody.hashkey;     
+    var inckey       = postBody.inckey;     
+    
+   // console.log("SELECT * FROM itribe_users WHERE id = '" + user_id + "' and password = '"+hashkey+"' ");
+
+    connection.query("SELECT * FROM itribe_users WHERE id = '" + user_id + "' and password = '"+hashkey+"' ", function(err, rows) {
+    
+    console.log(err);
+    
+     if (!err && rows.length > 0) {
+
+console.log("update itribe_users set password= '"+inckey+"' , status = '1'  WHERE id = " + user_id + " and password = '"+hashkey+"' ");
+
+        connection.query("update itribe_users set password= '"+inckey+"' , status = '1'  WHERE id = " + user_id + " and password = '"+hashkey+"' ", function (error, results, fields) {
+        if (error) throw error;            
+            res.send({ msg: 'Successfully changed' });        
+        });
+     }
+       else
+     {
+        res.send({ msg: 'Not Changed. Please Try Again...' });
+     }
+
+    });
+    
+
+    connection.release();
+
+  });
+
+});
+
+
+// forgetpassword 
+
+
+app.post('/api/forgetpassword', function(req, res, next) {
+
+   var postBody = req.body.task;   
+
+    db.getConnection(function(err, connection) {       
+       
+        
+    var email    = postBody.email;         
+
+    connection.query('SELECT * from itribe_users where email="'+email+'" ', function(err, rows) {
+
+          
+          console.log(err);
+
+            if (!err && rows.length > 0) {
+                
+                var userid   = rows[0]['id'];
+                var password = rows[0]['password'];
+                var name = rows[0]['name'];
+
+                var htmlContent = '<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8" /></head><body style="padding: 0; margin:0; background:#F4FBFD;font-family:Arial, Helvetica, sans-serif; font-size:13px; color:#000000; padding:0px 15px 10px 15px;">';
+htmlContent += '<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr><td align="center" valign="top" style=""><br><br>';
+htmlContent += '<table width="600" border="0" cellspacing="0" cellpadding="0"><tr><td align="center" valign="top" bgcolor="#fff" style="border-radius: 0.375rem; box-shadow: 12px 15px 20px 0 rgba(46, 61, 73, 0.15); padding:50px " >';
+htmlContent += '<div><img src="/images/logo.jpg"></div><br>';
+htmlContent += '<div style=" border-bottom: 1px solid #ddd; border-top: 1px solid #ddd; color: #000; font-size: 48px; padding: 4px 0;"><b>Welcome to iTribe</b></div> <br>';
+htmlContent += '<div><h2 style="font-size: 17px;  text-align: left;">Dear '+name+',</h2></div>';
+htmlContent += '<div style="text-align: left;">';
+htmlContent += '<strong> Please click on change password link</strong> <br>  <br>';
+htmlContent += '<br><br><div><a href="'+base_s_url+'/newpassword/'+userid+'/'+password+'" style="color: #3ba700; font-size: 16px; text-transform: capitalize;"> Change Password </a></div>';
+htmlContent += '<br> <br> © Copyright 2018 - iTribe </div></td></tr></table><br><br></td></tr></table></body></html>';
+
+
+                const msg = {
+                to: email,
+                from: 'info@itribe.us',
+                subject: 'iTribe Forgot Password Mail',
+                text: 'Dear, '+name+', Please click on change password link ',
+                html: htmlContent,
+                };
+
+                sgMail.send(msg);
+
+                res.json(rows);
+
+            } else {
+                res.json([]);
+            }
+        });
+
+        
+        connection.release();
+
+    });
 
 });
 
@@ -1058,7 +1320,7 @@ app.post('/api/login', function(req, res, next) {
 
    var postBody = req.body.task;
 
-    console.log(postBody);
+    //console.log(postBody);
 
     db.getConnection(function(err, connection) {       
        
@@ -1081,6 +1343,8 @@ app.post('/api/login', function(req, res, next) {
                 res.json([]);
             }
         });
+
+        connection.release();
 
     });
 
@@ -1108,6 +1372,8 @@ app.get('/api/communitystatusadmin', function(req, res, next) {
            res.send({ msg: 'Successfully Updated' });   
         });
  
+    
+        connection.release();
 
     });
 
@@ -1139,6 +1405,8 @@ app.post('/api/alogin', function(req, res, next) {
             }
         });
 
+        connection.release();
+
     });
 
 });
@@ -1148,13 +1416,19 @@ app.post('/api/alogin', function(req, res, next) {
 
 app.get('/api/getUserByIdOne', (req, res) => {
 
+  db.getConnection(function(err, connection) { 
+
     var postBody     = req.query;                 
     var uid          = postBody.uid;
 
-    db.query('SELECT * from itribe_users where id=? limit 1',[uid], function (error, results, fields) {
+    connection.query('SELECT * from itribe_users where id=? limit 1',[uid], function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results[0]));
     });  
+
+     connection.release();
+
+    });
 
 });
 
@@ -1162,16 +1436,21 @@ app.get('/api/getUserByIdOne', (req, res) => {
 
 app.get('/api/getUserById', (req, res) => {
 
+     db.getConnection(function(err, connection) { 
+
     var postBody     = req.query;                 
     var uid          = postBody.uid;
 
-    db.query('SELECT * from itribe_users where id=?',[uid], function (error, results, fields) {
+    connection.query('SELECT * from itribe_users where id=?',[uid], function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
     });
   
     //res.send({ express: 'Hello From Express' });
     //res.send({ one: 'Express 1', two : 'Express 2', three : 'Express 3' , four : 'Express 4' });
+      connection.release();
+
+    });
 
 });
 
@@ -1179,7 +1458,9 @@ app.get('/api/getUserById', (req, res) => {
 
 app.get('/api/users', (req, res) => {
 
-    db.query('SELECT * from itribe_users', function (error, results, fields) {
+ db.getConnection(function(err, connection) {
+
+    connection.query('SELECT * from itribe_users', function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
     });
@@ -1187,6 +1468,9 @@ app.get('/api/users', (req, res) => {
     //res.send({ express: 'Hello From Express' });
     //res.send({ one: 'Express 1', two : 'Express 2', three : 'Express 3' , four : 'Express 4' });
 
+     connection.release();
+
+    });
 });
 
 app.get('/api/hello', (req, res) => {
@@ -1202,7 +1486,7 @@ app.get('/api/hello', (req, res) => {
 sgMail.send(msg);*/
 
 
-    db.query('SELECT * from itribe_users', function (error, results, fields) {
+    connection.query('SELECT * from itribe_users', function (error, results, fields) {
     if (error) throw error;
     res.send(JSON.stringify(results));
     });

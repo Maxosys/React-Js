@@ -1,10 +1,36 @@
 var mysql=require('mysql');
- var connection=mysql.createPool({
+
+var connection=mysql.createPool({
  
-host:'localhost',
+/* host:'itribedbinstance.cdcnrqweikkn.us-east-2.rds.amazonaws.com',
+ user:'iTribe',
+ password:'qwQWasASzxZX',
+ database:'itribedb'*/
+
+ host:'localhost',
  user:'root',
  password:'',
  database:'itribedb'
  
 });
- module.exports=connection;
+
+connection.getConnection(function(err, connection) {
+  	
+  	if(err)
+  	{
+  		console.log("database error ",err);	
+  	}
+  	else
+  	{
+  		console.log("Database Connected");		
+  	}
+  //console.log("database error ",err);
+
+});
+
+
+connection.on('release', function (connection) {
+  console.log('Connection %d released', connection.threadId);
+});
+
+module.exports=connection;
