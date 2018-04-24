@@ -94,15 +94,25 @@ class App extends Component {
     <div >    
     <HomeHeader />
     <section id="iq-home" className="banner iq-bg iq-bg-fixed iq-box-shadow iq-over-black-90">
+      <div id="carousel-example-generic" className="carousel slide" data-ride="carousel">
         <div className="container">
+          <div className="item active">
             <div className="banner-text">
+              <div className="" id="step3">
                 <h3>Connecting the whole family of Israel</h3>
-                <p>Mapping communities of the Lost Tribes, Crypto-Jews <br /> and Noahides, worldwide </p> 
-            </div>
-            <div className="outer-div">
-              <div id="earth_div"></div>
-            </div>
+                <p>Mapping communities of the Lost Tribes, conversos <br /> and Noahides, worldwide </p>
+                <div className="col-sm-12 col-lg-12 col-md-12">
+                    <div className="map" data-animation="animated fadeInRight">
+                      <div className="globe">
+                        <figure className="surface globemapcss" id="earth_div"  ></figure>
+                      </div>                 
+                    </div>
+                </div> 
+              </div>
+            </div> 
+           </div>
         </div>
+      </div>
     </section>
    
     <section className="about" >

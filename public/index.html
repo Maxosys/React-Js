@@ -45,18 +45,28 @@
 		var base_url   = 'http://localhost:3000';
 	
 	</script>
-	
+
+<!-- Hotjar Tracking Code for https://www.itribe.us -->
 <script>
-
-
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:306066,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
 </script>
-	
+
 	
 	 <script crossorigin  src="https://www.webglearth.com/v2/api.js"></script>
 	 
 	 
 <script>
     
+        var earth = undefined;
+    	var myReq;
+
 	function initialize(mapdataj) {
 		
 		//console.log(mapdataj);
@@ -82,7 +92,7 @@
           tilting: true,
           zooming: true,
           center: [20.5937, 78.9629],
-          zoom: 2.1
+          zoom: 2
         };
         earth = new WE.map('earth_div', options);
 		
@@ -111,14 +121,14 @@
 		
 		
 		// Start a simple rotation animation
-        var before = null;
+        /*var before = null;
         requestAnimationFrame(function animate(now) {
             var c = earth.getPosition();
             var elapsed = before? now - before: 0;
             before = now;
             earth.setCenter([c[0], c[1] + 0.1*(elapsed/30)]);
-            //requestAnimationFrame(animate);
-        });
+            requestAnimationFrame(animate);
+        });*/
 		
 		
 		//console.log(mapdataj1);
@@ -301,6 +311,26 @@
 		abc();
 		//initialize();        
     }
+
+     function rotate_play_pause() {
+        var before = null;
+        var status = document.getElementById("rotate_button");
+        if (status.value == String.fromCharCode(9654)) {
+           document.getElementById("rotate_button").value = String.fromCharCode(9646);
+            // Start a simple rotation animation        
+        requestAnimationFrame(function animate(now) {
+            var c = earth.getPosition();
+            var elapsed = before? now - before: 0;
+            before = now;
+            earth.setCenter([c[0], c[1] - 0.1*(elapsed/30)]);
+            myReq = requestAnimationFrame(animate);
+        });//requestAnimationFrame
+
+        } else {
+          cancelAnimationFrame(myReq);
+          document.getElementById("rotate_button").value = String.fromCharCode(9654);
+          }//if else
+         }//function rotate_play_pause()
 	
     </script>
    
@@ -337,6 +367,8 @@
                     <li><a href="/privacy-policy">Privacy Policy  </a></li>
                     <li><a href="/terms-and-conditions"> Terms and Conditions</a></li>
                   </ul>
+                  <div class="made">Powered by <a href="http://www.maxosys.com/" target="_blank"> Maxosys Ltd.</a> </div>
+
                 </div>
                 <div class="col-sm-6 copyright">
                   <div class="footer__social-block">

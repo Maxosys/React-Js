@@ -151,10 +151,10 @@ br{display: none}
 .video-section::after {bottom: -14px; }
 #timeline .timeline-item .timeline-content , .left{left: 0 !important;}  
 .globe {bottom: 0; left: 0; right: 0; top: 0; width: 100%;  -webkit-margin-before: 0;  }
-.about {padding: 0 0 50px; }
+.about {padding: 20px 0 50px; }
 .globemapcss {height: 217px !important; margin: 0 auto; max-width: 212px; padding: 0 !important; width: 100% !important; -webkit-margin-before: 0px !important; }
 
-.iq-over-black-90::after {background-size: cover; height: 450px; top: 0; }
+.iq-over-black-90::after {background-size: cover; /*height: 450px;*/ height: 532px; top: 0; }
 .navbar-brand {float: left; font-size: 18px; height: auto; line-height: 20px; padding: 7px 0;  }
 .navbar-brand  img {float: left; margin-left: 9px; max-width: 114px; }
 .side-bar i {cursor: pointer; }
@@ -168,7 +168,7 @@ br{display: none}
 .learn {padding-left: 11px; }
 .input-container {flex-direction: column; }
  .reset__form .btn {margin: 10px auto 0; }
- header {height: 55px }
+ header {height: 55px,z-index:9;position: relative; }
  .signup.dropdown.userpic {border-color: transparent; }
  .navbar-brand i {color: #fff}
  .user-img > img {max-width: 50px; }
@@ -243,7 +243,13 @@ br{display: none}
 .dropdown-menu.user-account-menu.simple.pull-right{border:none; border-radius: 0; margin-top: 13px}
 .modal-dialog {margin: 50px auto; }
 .modal-header .close {margin: 4px !important; }
-
+#iq-home {height: auto; }
+.outer-div {bottom: 0; height: 311px; left: 0; right: 0; text-align: center; top: -293px; transform: translateX(0px); width: 100%;      -webkit-margin-before: 0px;}
+#earth_div {height: 100%; top: 204px; }
+#earth_div canvas {border-radius: 500px !important; height: 285px !important; width: 289px !important; }
+.globe-bg #earth_div canvas {height: 100% !important; width: 100% !important; }
+ul.dropdown-menu.notificationdiv {left: auto !important; }
+.mobileaccount .dropdown-menu.pull-right {width: 100%;     margin-top: 3px !important; }
 
 
  }
@@ -286,11 +292,13 @@ header .navbar-default .navbar-nav > li > a, .dropdown > span {letter-spacing: 0
 .filename {font-size: 11px; }
 .userpic i {color: #fff; }
 .inner-header .userpic i {color: #777; }
-.mobileaccount .count {right: 34px; }
 .links > a {font-size: 12px;}
 .dropdown-menu.user-account-menu.simple.pull-right{border:none; border-radius: 0; margin-top: 13px}
 .date {float: none; font-size: 10px; margin-top: 0; text-align: right; }
-
+.outer-div {transform: translateX(-21.5%);}
+#iq-home {height: auto; overflow: hidden; }
+.mobileaccount .count {right: -3px; top: 7px; }
+.inboxs.show-on-hover{position: relative;}
 
 
 }
@@ -318,5 +326,11 @@ header .navbar-nav > li {margin: 0 23px 0 0; }
 .filename {font-size: 11px; }
 .about {padding-top: 0; }
 .memberinfo {width: 290px; }
+.outer-div {top: -125px; transform: translateX(-162px); }
+#iq-home { overflow: hidden; }
+
+
+
+
 
 }

@@ -65,14 +65,40 @@ app.post('/api/updateprofile', function(req, res, next) {
 
            res.send({ msg: 'Successfully Updated' });   
         });
- 
-    
 
         connection.release();
-
     });
 
 });
+
+// end 
+
+// get notifications
+    
+    app.get('/api/getnotifications', (req, res) => {
+          db.getConnection(function(err, connection) {
+
+        var postBody     = req.query;    
+        var userid       = postBody.userid;   
+   
+
+    connection.query("SELECT `sender_id` as sid,`reciver_id` as rid , COUNT(reciver_id) as countnotifiction , (SELECT name FROM `itribe_users` WHERE id = sid ) as sendername , (SELECT msg_text FROM `itribe_messages` WHERE (sender_id = sid and reciver_id = rid) order by msg_id LIMIT 1 ) as lastmsg FROM `itribe_messages` WHERE `status` = 0 and reciver_id = '"+userid+"' GROUP BY sender_id", function(err, rows) {
+                
+            if (!err && rows.length > 0) {
+
+              res.json(rows);
+
+            }
+            else
+            {
+                res.json([]);
+            }
+
+            connection.release();
+        });
+    });
+});
+    
 
 // end 
 
@@ -247,6 +273,199 @@ app.post('/api/addmessage', function(req, res, next) {
 
 
 
+// Delete Communities
+
+app.get('/api/delete_community', (req, res) => {
+
+    db.getConnection(function(err, connection) {
+
+        var postBody            = req.query;                 
+        var community_id       = postBody.community_id; 
+        
+// delete from itribe_community
+
+    connection.query('delete from `itribe_community` where community_id = "'+community_id+'"  ', function(err, rows) {
+     console.log(err);            
+        });
+
+// delete from itribe_commu_members
+
+    connection.query('delete from `itribe_commu_members` where commun_id = "'+community_id+'"  ', function(err, rows) {
+     console.log(err);            
+        });
+
+// delete from itribe_commu_invitation
+
+    connection.query('delete from `itribe_commu_invitation` where commu_id = "'+community_id+'"  ', function(err, rows) {
+     console.log(err);            
+        });
+
+ // delete from itribe_library
+
+    connection.query('delete from `itribe_library` where community_id = "'+community_id+'"  ', function(err, rows) {
+     console.log(err);            
+        });  
+
+ // delete from itribe_library
+
+    connection.query('delete from `itribe_messages` where community_id = "'+community_id+'"  ', function(err, rows) {
+     console.log(err);            
+        });      
+
+
+     res.send({ msg: 'Community Successfully Deleted' }); 
+
+    connection.release();
+
+    });
+
+});
+
+// Delete Users 
+
+app.get('/api/delete_users', (req, res) => {
+
+    db.getConnection(function(err, connection) {
+
+        var postBody            = req.query;
+        var user_id             = postBody.user_id; 
+
+// delete from itribe_users
+
+    connection.query('delete from `itribe_users` where id = "'+user_id+'"  ', function(err, rows) {
+     console.log(err);            
+        });
+
+// delete from itribe_community
+
+    connection.query('delete from `itribe_community` where community_owner_id = "'+user_id+'"  ', function(err, rows) {
+     console.log(err);            
+        });
+
+// delete from itribe_commu_members
+
+    connection.query('delete from `itribe_commu_members` where user_id = "'+user_id+'"  ', function(err, rows) {
+     console.log(err);            
+        });
+
+// delete from itribe_commu_invitation
+
+    connection.query('delete from `itribe_commu_invitation` where user_id = "'+user_id+'"  ', function(err, rows) {
+     console.log(err);            
+        });
+
+ // delete from itribe_library
+
+    connection.query('delete from `itribe_library` where user_id = "'+user_id+'"  ', function(err, rows) {
+     console.log(err);            
+        });  
+    
+ // delete from itribe_messages
+
+    connection.query('delete from `itribe_messages` where sender_id = "'+user_id+'"  ', function(err, rows) {
+     console.log(err);            
+        });      
+
+
+     res.send({ msg: 'Successfully Deleted' }); 
+
+    
+    connection.release();
+
+    });
+
+});
+
+//get check community member status by community id
+
+app.get('/api/joinedcommunitybyuid_status',(req, res) => {
+
+     db.getConnection(function(err, connection) {
+
+    var postBody     = req.query;                 
+    var user_id      = postBody.uid;    
+    var commun_id    = postBody.cid;    
+
+     connection.query("SELECT * FROM itribe_commu_members WHERE user_id='" + user_id + "' and commun_id = '"+ commun_id+"'  LIMIT 1", function(err, rows) {
+    
+    console.log(err);
+
+     res.json(rows[0]);
+        
+        });
+        
+    
+    connection.release(); })   });
+
+app.get('/api/joinedcommunitybyuid_statusmembership',(req, res) => {
+
+     db.getConnection(function(err, connection) {
+
+    var postBody     = req.query;                 
+    var user_id      = postBody.uid;          
+
+     connection.query("SELECT * FROM itribe_commu_members WHERE user_id='" + user_id + "' ", function(err, rows) {
+    
+    console.log(err);
+
+     res.json(rows);
+        
+        });
+        
+    
+    connection.release(); })   });
+
+
+// end
+
+// get All Joined Communities by user id DONE
+
+app.get('/api/pendingcommunitybyuid', (req, res) => {
+
+     db.getConnection(function(err, connection) {
+
+    var postBody     = req.query;                 
+    var user_id      = postBody.uid;    
+   
+    var result = [];
+    var commIdArr = [];
+//and user_join_status = '1'
+    connection.query("SELECT * FROM itribe_commu_members WHERE user_id='" + user_id + "' and user_join_status = '0' ", function(err, rows) {
+    
+    console.log(err);
+
+    //res.send({ express: 'Hello From Express' });
+            if (!err && rows.length > 0) {
+            
+                rows.forEach((row) => {
+                    commIdArr.push(row.commun_id);
+                });           
+
+            var community_id = 1;
+
+          connection.query('SELECT * from itribe_community,itribe_users where  itribe_community.community_owner_id = itribe_users.id and itribe_community.community_id IN  ('+commIdArr+') ', function (error, results, fields) {
+            if (error) throw error;
+                
+                res.send(JSON.stringify(results));
+            
+            });
+               
+              // res.contentType('application/json');          
+
+            }
+            else
+            {
+                res.json({ msg: 'Not Found Any Joined Community' });
+            }
+
+    });
+
+    connection.release();
+
+});
+});
+
+
 // get All Joined Communities by user id DONE
 
 app.get('/api/joinedcommunitybyuid', (req, res) => {
@@ -258,8 +477,8 @@ app.get('/api/joinedcommunitybyuid', (req, res) => {
    
     var result = [];
     var commIdArr = [];
-
-    connection.query("SELECT * FROM itribe_commu_members WHERE user_id='" + user_id + "' and user_join_status = '1' ", function(err, rows) {
+//
+    connection.query("SELECT * FROM itribe_commu_members WHERE user_id='" + user_id + "' and user_join_status = '1'  ", function(err, rows) {
     
     console.log(err);
 
@@ -303,10 +522,11 @@ app.get('/api/joincommunity', function(req, res, next) {
 
         var postBody         = req.query;
             
-        //console.log(postBody);
+            console.log(postBody);
 
             var commun_id        = postBody.commun_id;
             var user_id          = postBody.user_id;
+            var community_owner_id       = postBody.reciver_id;
             var user_join_status = 0;
             var status           = 1;
 
@@ -332,6 +552,26 @@ app.get('/api/joincommunity', function(req, res, next) {
 
         if (!err && rows.length > 0) {
 
+            //insert in message for '6)  Pending community join requests should be a message and should be reflected in a number in the inbox'
+
+            var sender_id      = user_id;
+            var reciver_id     = community_owner_id;
+            var msg_text       = 'Pending community join requests';
+            var status         = 0;
+            var community_id   = commun_id;
+            var chat_file      = 'text'; //postBody.chat_file;
+            var file_extension = '';//postBody.file_extension;
+
+            console.log(reciver_id);
+
+     connection.query('INSERT INTO `itribe_messages` (`sender_id`, `reciver_id`, `msg_text`, `status`, `community_id`, `chat_file`, `file_extension`) ' +
+      'VALUES (?, ? , ?, ?, ?, ?, ?)',[sender_id, reciver_id, msg_text, status, community_id, chat_file, file_extension], function(msgerr, msgrows) {
+
+      });
+            // end 
+
+
+
         res.json(rows[0]);
 
         } else {
@@ -355,6 +595,31 @@ app.get('/api/joincommunity', function(req, res, next) {
 
 });
 
+// leave_community
+
+app.get('/api/leave_community', (req, res) => {
+
+    db.getConnection(function(err, connection) {
+
+        var postBody            = req.query;                 
+        var commun_id       = postBody.commun_id; 
+        var user_id             = postBody.user_id; 
+
+    connection.query('delete from `itribe_commu_members` where commun_id = "'+commun_id+'"  and user_id = "'+user_id+'" ', function(err, rows) {
+
+     console.log(err); 
+
+           res.send({ msg: 'Successfully Left' });   
+        });
+
+    
+    connection.release();
+
+    });
+
+});
+
+// end 
 
 // Delete Join Requests
 
@@ -364,11 +629,14 @@ app.get('/api/delete_join_request', (req, res) => {
 
         var postBody     		= req.query;                 
         var commun_rel_id       = postBody.commun_rel_id; 
-        var user_id      		= postBody.user_id; 
+        var user_id             = postBody.user_id; 
+        var commun_id      		= postBody.commun_id; 
 
     connection.query('delete from `itribe_commu_members` where commun_rel_id = "'+commun_rel_id+'"  and user_id = "'+user_id+'" ', function(err, rows) {
 
      console.log(err); 
+    
+    connection.query('update `itribe_messages` set `status` = "1"  where community_id = "'+commun_id+'"  and sender_id = "'+user_id+'" ', function(errmsg, rowsmsg) { });
 
            res.send({ msg: 'Successfully Rejected' });   
         });
@@ -388,11 +656,14 @@ app.get('/api/approve_join_request', (req, res) => {
 
         var postBody     		= req.query;                 
         var commun_rel_id       = postBody.commun_rel_id; 
-        var user_id      		= postBody.user_id; 
+        var user_id             = postBody.user_id; 
+        var commun_id      		= postBody.commun_id; 
 
             connection.query('update `itribe_commu_members` set `user_join_status` = "1"  where commun_rel_id = "'+commun_rel_id+'"  and user_id = "'+user_id+'" ', function(err, rows) {
 
      console.log(err); 
+
+        connection.query('update `itribe_messages` set `status` = "1"  where community_id = "'+commun_id+'"  and sender_id = "'+user_id+'" ', function(errmsg, rowsmsg) { });
 
            res.send({ msg: 'Successfully Approved' });   
         });
@@ -1358,19 +1629,35 @@ app.get('/api/communitystatusadmin', function(req, res, next) {
 
     db.getConnection(function(err, connection) {
 
-            var postBody = req.query;    
+        var postBody = req.query;    
+        console.log(postBody);
+        
+        var commun_id           = postBody.commun_id;
+        var user_id             = postBody.user_id;
+        var community_status    = postBody.statusset;
 
-            console.log(postBody);      
 
-            var commun_id   = postBody.commun_id;
-            var community_status   = postBody.statusset;
 
     connection.query('update `itribe_community` set `community_status` = "'+community_status+'"   where community_id = "'+commun_id+'" ', function(err, rows) {
 
-     console.log(err); 
+    console.log(err); 
 
-           res.send({ msg: 'Successfully Updated' });   
-        });
+           // var commun_id          = commun_id;
+            //var user_id            = user_id;
+            var user_join_status   = 1;
+            var status             = 1;
+
+connection.query('INSERT INTO `itribe_commu_members` (`commun_id`, `user_id`, `user_join_status`, `status`) ' +
+        'VALUES (?, ? , ?, ?)',[commun_id, user_id, user_join_status, status], function(err1, rows1) {
+
+        console.log(err1);
+
+        res.send({ msg: 'Successfully Updated' }); 
+
+            });   // end join insert query 
+
+             
+    });
  
     
         connection.release();

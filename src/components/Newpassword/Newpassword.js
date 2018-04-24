@@ -54,10 +54,10 @@ handleChange(event) {
         
        const data = new FormData(event.target);
 
-        var password     = data.get('password');
-        var cpassword    = data.get('cpassword');
-        var uid          = data.get('uid');
-        var hashkey      = data.get('hashkey');
+        var password     = $("#password").val();  //data.get('password');
+        var cpassword    = $("#cpassword").val(); //data.get('cpassword');
+        var uid          = $("#uid").val();       //data.get('uid');
+        var hashkey      = $("#hashkey").val();   //data.get('hashkey');
 
 
           if(password !== cpassword)
@@ -155,15 +155,15 @@ handleChange(event) {
           <form onSubmit={this.handleSubmit} >
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-user"></i></span>
-              <input id="login-newpassword" required type="password" className="form-control" name="password" placeholder="Enter New Password" />                                        
+              <input id="password" required type="password" className="form-control" name="password" placeholder="Enter New Password" />                                        
             
-                <input type="hidden" name="uid" value={this.state.uid} />
-                <input type="hidden" name="hashkey" value={this.state.hashkey} />
+                <input type="hidden" id="uid" name="uid" value={this.state.uid} />
+                <input type="hidden" id="hashkey" name="hashkey" value={this.state.hashkey} />
 
             </div>           
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-lock"></i></span>
-              <input id="login-cnewpassword" required type="password" className="form-control" name="cpassword" placeholder="Confirme Password" />
+              <input id="cpassword" required type="password" className="form-control" name="cpassword" placeholder="Confirme Password" />
             </div>
             
             <button className="btn button--primary" type="submit"> Change <i aria-hidden="true" className="fa fa-angle-right"></i> </button>

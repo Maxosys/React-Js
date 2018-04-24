@@ -24,6 +24,7 @@ import EditProfile from './components/EditProfile/EditProfile.js';
 import PrivacyPolicy from './components/PrivacyPolicy/PrivacyPolicy.js';
 import Termandconditions from './components/Termandconditions/Termandconditions.js';
 import JoinedCommunity from './components/JoinedCommunity/JoinedCommunity.js';
+import PendingCommunity from './components/PendingCommunity/PendingCommunity.js';
 import AdminLogin from './components/AdminLogin/AdminLogin.js';
 import AdminDashboard from './components/AdminDashboard/AdminDashboard.js';
 import AllUsers from './components/AdminDashboard/AllUsers.js';
@@ -43,6 +44,7 @@ const Routes = (props) => (
     <Route path="/search/:cstr" title="Search | iTribe" component={CommunityDisplay} />
     <Route path="/my-community" title="My Community Display | iTribe" component={CommunityDisplay} />   
     <Route path="/joined-communities" title="List Of Joined Community Display | iTribe" component={JoinedCommunity} />   
+    <Route path="/pending-communities" title="List Of Unapproved Community Display | iTribe" component={PendingCommunity} />   
     <Route path="/contact" title="Contact | iTribe" component={Contact} />
     <Route path="/edit-community-details/:cid" title="Edit Community Details | iTribe" component={EditCommunityDetails} />
     <Route path="/library/:cid" title="Library | iTribe" component={Library} />

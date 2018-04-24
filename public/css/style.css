@@ -3,7 +3,11 @@
 body {color: #666666; font-family: "Poppins",sans-serif !important; font-size: 14px; font-style: normal; font-weight: normal; height: 100%; line-height: 24px; min-height: 100%; overflow-x: hidden; }
 
  html, body{padding: 0; margin: 0;}
- #earth_div{top: 0px; right: 0; bottom: 0; left: 0; position: absolute !important;     overflow: visible !important;     -webkit-margin-before: -20px;}
+/* #earth_div{top: 0px; right: 0; bottom: 0; left: 0; position: absolute !important;     overflow: visible !important;     -webkit-margin-before: -20px;}*/
+
+#earth_div {bottom: 0; height: 587px; left: 0; position: absolute !important; right: 0; top: 0; }
+
+
 a, .button { transition: all 0.5s ease-in-out; transition: all 0.5s ease-in-out; -moz-transition: all 0.5s ease-in-out; -ms-transition: all 0.5s ease-in-out; -o-transition: all 0.5s ease-in-out; -webkit-transition: all 0.5s ease-in-out; color: #333333; }
 a:focus { text-decoration: none !important; }
 a:focus, a:hover { text-decoration: none !important; }
@@ -108,7 +112,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#546f84', end
 /*---------------------------------------------------------------------
                             Banner
 -----------------------------------------------------------------------*/
-.banner-text {padding: 30px 0 ; text-align: center; }
+.banner-text {padding: 30px 0; text-align: center;  }
 .img-one { width: 80%; }
 .banner-text h1 {color: #fff; font-size: 32px; font-weight: 700; letter-spacing: 0; line-height: 42px; margin-bottom: 15px; margin-top: 19%; text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); text-transform: none; }
 .banner-text h1 small { font-size: 18px; display: block; text-shadow: 0px 0px 0px rgba(0, 0, 0, 0.1); }
@@ -290,7 +294,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#546f84', end
 .cmmunties a::after{display: none;}
 .map-marker .button {font-size: 14px !important; margin-bottom: 8px; margin-top: 8px; text-decoration: none !important; }
 
-.about {padding: 80px 0; text-align: center; }
+.about {padding: 130px 0 80px; text-align: center; } 
 .title > h3 {color: #000; font-size: 24px; font-weight: 600; position: relative; text-transform: uppercase; }
 .sep {margin-bottom: 30px; }
 .howitworks {text-align: center; }
@@ -424,7 +428,7 @@ abbr.timestamp {background: #fff none repeat scroll 0 0; color: #99a1a7; padding
 #mySidenav .dropdown-menu {background: #f4f4ef none repeat scroll 0 0; box-shadow: none !important; display: block; margin-bottom: 15px; padding: 0; position: relative; top: 0 !important; width: 100% !important; }
 .inner-header .icon.user {background-position: -86px -64px; }
 .userpic a {padding-left: 12px !important; padding-right: 20px !important; }
-.count {background: #3ba700 none repeat scroll 0 0; border-radius: 50%; color: #fff; display: block; font-size: 11px; font-style: normal; font-weight: 500; height: 20px; line-height: 20px; padding: 0 0 0 2px; position: absolute; right: 26px; text-align: center; text-transform: none; top: 35px; vertical-align: top; width: 20px; }
+.count {background: #3ba700 none repeat scroll 0 0; border-radius: 50%; color: #fff; display: block; font-size: 11px; font-style: normal; font-weight: 500; height: 20px; line-height: 20px; padding: 0 0 0 2px; position: absolute; right: 15px; text-align: center; text-transform: none; top: 35px; vertical-align: top; width: 20px; }
 .mobileaccount {float: right; margin-top: 16px; width: 110px; }
 .mobileaccount .inboxs {border: medium none !important; float: right; }
 .mobileaccount .count {right: 12px; top: 24px; }
@@ -737,7 +741,7 @@ span.cesium-credit-textContainer {display: none; }
  .normalsytle {margin-bottom: 30px; text-align: left; }
  .privacyterms b {float: left; text-align: left; width: 100%; }
  .privacyterms li , .innerText {color: #525c65; text-align: left; }
- .we-pp-content .memberinfo {margin: 0; }
+ .we-pp-content .memberinfo {margin: 0;  width: 100%}
  .we-pp-content .members-name {font-size: 15px; }
  .edit-details label.switch {float: left; margin-right: 10px; }
 .edit-details .vis{float: left; margin-top: 6px}
@@ -758,7 +762,6 @@ span.cesium-credit-textContainer {display: none; }
 .discreption input, .discreption textarea {margin-bottom: 20px; }
 .contain .memberinfo {float: left; margin-left: 15px; width: auto; margin-top: 0 }
 #custom-search-input .input-group-btn {position: absolute; right: 20px; top: 12px; }
-
-
-
-
+.outer-div {bottom: 0; height: 507px; left: 0; position: relative; right: 0; top: -59px; transform: translateX(-92px); width: 1324px;  -webkit-margin-before: -24px; box-sizing: border-box; -webkit-box-sizing: border-box; }
+#iq-home{height: 100vh}
+ .made , .made a {padding: 0 15px; color: #2e3d49; }

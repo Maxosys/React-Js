@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import Header from '../Header/Header.js';
 import $ from 'jquery';
 
-class JoinedCommunity extends Component {  
+class PendingCommunity extends Component {  
 
   constructor(props) {
   
@@ -21,69 +21,8 @@ class JoinedCommunity extends Component {
       currentLocation:"",
       member_status:0
     };
-         //this.setState({ communitydata: communitydata }                  
-  
-    this.onClick = this.onClick.bind(this);
-
-
+         //this.setState({ communitydata: communitydata }            
   }
-
-// join community function
-
-  onClick(event,cid,uid) {
-
-      this.leaveCommunity(cid,uid)
-      .then((joinresp) => {console.log(joinresp) });     
-  }
-  
-  leaveCommunity(event,cid,uid) {
-    
-        var userdata = {cid:cid,uid:uid};
-        alert(uid);
-        const response =  fetch('/api/leave_community?commun_id='+cid+'&user_id='+uid,{
-        method: 'GET',         
-        headers: {"pragma": "no-cache","cache-control" : "no-cache"}
-        }).then( (response) => {
-        return response.json()
-        })
-        .then( (json) => {
-          
-               this.setState({ successmsg: "Successfully left",showResults:true });        
-               
-               //alert("Successfully left");
-        })
-        .catch( (ex) => {
-          
-          console.log('parsing failed', ex)
-        
-        });
-
-        // call
-          var elements = [];  
-          var obj = {};
-
-          var currentLocation = this.props.location.pathname;
-
-               
-          this.callApiGetCommunityByUid(sessionStorage.getItem('session_tokenid'))                     
-          .then((communitydata) => {this.setState({ communitydata: communitydata })
-
-          //console.log(this.state.communitydata);
-          const array = communitydata.map(function(x,i){      
-                      
-          elements.push({"latlong" : x.community_lat_long, "community_name" : x.community_name , "community_id" : x.community_id , "community_tagline" : x.community_tagline , "name" :x.name })
-          //elements.push(x)         
-        
-        })
-           window.initialize(elements);
-
-        });
-
-        // end
-  }
-
-// end 
- 
 
   componentWillMount() {
         
@@ -105,13 +44,17 @@ class JoinedCommunity extends Component {
           .then((communitydata) => {this.setState({ communitydata: communitydata })
 
           //console.log(this.state.communitydata);
+          if(communitydata[0])
+          {
           const array = communitydata.map(function(x,i){      
                       
-          elements.push({"latlong" : x.community_lat_long, "community_name" : x.community_name , "community_id" : x.community_id , "community_tagline" : x.community_tagline , "name" :x.name })
+          elements.push({"latlong" : x.community_lat_long, "community_name" : x.community_name , "community_id" : 0 , "community_tagline" : 'wait for admin approval' , "name" :x.name })
           //elements.push(x)         
         
-        })
+        }) 
+        }
            window.initialize(elements);
+
 
         });     
     
@@ -119,7 +62,7 @@ class JoinedCommunity extends Component {
 
     callApiGetCommunityByUid = async (uid) => {
 
-      const response = await fetch('/api/joinedcommunitybyuid?uid='+uid,{
+      const response = await fetch('/api/pendingcommunitybyuid?uid='+uid,{
       method: 'GET',   
       headers: {"pragma": "no-cache","cache-control" : "no-cache"}
       });
@@ -138,7 +81,6 @@ class JoinedCommunity extends Component {
   render() {
     const { className, ...props } = this.props;
 
-    let session_uid = sessionStorage.getItem('session_tokenid');
 
     var st = false;
 
@@ -155,7 +97,7 @@ class JoinedCommunity extends Component {
 	   
        <div className="communtiy-section login-section">
     <div className="container">
-      <div className="title"><h3> Joined iTribe Communities  </h3><div className="sep"><img alt="" src="images/sep.jpg" /></div></div>
+      <div className="title"><h3> Approval is pending: iTribe Communities  </h3><div className="sep"><img alt="" src="images/sep.jpg" /></div></div>
       <div className="breadcrums-search communtiesitribe">
         <div className="searchfaq">         
          
@@ -180,8 +122,6 @@ class JoinedCommunity extends Component {
           <ul className="members-name cumnnity-list">
 
           { st ? 
-            
-           
 
           this.state.communitydata.map(member =>
             
@@ -193,9 +133,7 @@ class JoinedCommunity extends Component {
                 <div className="totalmember">Owner Name : <span className="m-number">{member.name} </span></div>
                 <div className="communitybuttons">
 
-               <a href={'members-card/'+member.community_id} className="view-detail">View details</a> 
-               
-               <a href="javascript:;" onClick={(event) => { this.leaveCommunity(event,member.community_id,session_uid) }}  className="view-detail">Leave Community  </a> 
+               <span className="view-detail">Wait for approval</span> 
                                 
                 
                 </div>
@@ -203,7 +141,7 @@ class JoinedCommunity extends Component {
              </li>
           )
 
-           : "you're not a member of any communities"
+           : "no approval pending"
           
           }
 
@@ -222,6 +160,6 @@ class JoinedCommunity extends Component {
 
 
 
-export default JoinedCommunity;
+export default PendingCommunity;
 
 

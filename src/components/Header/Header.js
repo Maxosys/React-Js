@@ -53,8 +53,9 @@ export default class Header extends React.Component {
           { showResults ? 
 
             <div id="errormsgdiv" className="alert alert-success errormsgdiv hideafter5sec" >
-              <a href="" className="close" data-dismiss="alert" aria-label="close">&times;</a>
-              <div className="info_message">{displaymessage} </div>
+                <a href="" className="close" data-dismiss="alert" aria-label="close">&times;</a>              
+                
+                <div className="info_message"> {displaymessage} </div>
             </div> 
             : 
 

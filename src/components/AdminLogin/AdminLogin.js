@@ -39,7 +39,7 @@ constructor(props){
     };
   }*/
 
-  handleChange(event) {    
+  handleChange(event) {
 
     console.log(event);
     //this.setState({username: event.target.username,password:event.target.password});    
@@ -58,8 +58,8 @@ constructor(props){
         
        const data = new FormData(event.target);
 
-        var email     = data.get('username');
-        var password  = data.get('password');
+        var email     = $("#login-username").val(); //data.get('username');
+        var password  = $("#login-password").val(); //data.get('password');
 
         var userdata = {email:email,inckey:password};
         
@@ -164,7 +164,7 @@ constructor(props){
                 <div className="input-container PosR">
                   <div className="input-group">
                     <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-                    <input id="login-username" type="text" className="form-control" name="email"  placeholder="Email" />
+                    <input id="login-username-email" type="text" className="form-control" name="email"  placeholder="Email" />
                   </div>
                   <input type="submit"  value="Send Email" id="submitReset" className="btn btn-block btn-primary btn-login center-block" />
                 </div>

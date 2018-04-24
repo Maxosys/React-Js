@@ -122,10 +122,13 @@ Testing 2149467885280869
 
 $(function () {
 
+ 
+ 
 // user profile pic click
 
     $('#userpicuploadbtn').on('click',function(e) {
       
+
       $('#userprofilepic').click();
 
     });
@@ -135,7 +138,7 @@ $(function () {
 // Library pic click
 
     $('#libuploadbtn').on('click',function(e) {
-      
+     
       $('#libfileid').click();
 
     });
@@ -148,7 +151,7 @@ $(function () {
     FB.login(function(response) {
         if (response.authResponse) {
          console.log('Welcome!  Fetching your information.... ');
-          FB.api('/me?fields=name,email,birthday,first_name,last_name,gender,hometown', function(response) {
+          FB.api('/me?fields=name,email,first_name,last_name,gender,hometown', function(response) {
 
     //console.log(response);
     console.log('Good to see you, ' + response.name + '.');
@@ -157,7 +160,7 @@ $(function () {
       var email      = response.email;
       var password   = response.id;
       var usertype   = 'fb';
-      var birthday   = response.birthday;
+      var birthday   = "";//response.birthday;
       var gender     = response.gender;
       
 
@@ -194,7 +197,7 @@ $(function () {
          console.log('User cancelled login or did not fully authorize.');
         }
     },{
-        scope: 'email,user_birthday'
+        scope: 'email'
     });
 
      });
@@ -242,6 +245,13 @@ $(function () {
         goBack();
     });
 
+    $('.hidedivclose').on('click', function(event) {
+        alert(5);
+        $(".errormsgdiv").remove();        
+        event.preventDefault();        
+    });
+   
+
     /*function openNav() {
      document.getElementById("mySidenav").style.width = "320px";   
     }
@@ -276,14 +286,16 @@ $(".readmore").on('click touchstart', function(event) {
 });
 
 
- function goBack() {
+function goBack() {
+
       window.history.go(-1);
-     }
+}
+
 
 
 $(document).ready(function(){
 
-    setTimeout(function() {  $("#errormsgdiv").toggle("slow"); }, 9000);
+    //setTimeout(function() {  $("#errormsgdiv").hide(); }, 9000);
 });
 
 

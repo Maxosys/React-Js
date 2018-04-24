@@ -50,11 +50,11 @@ class EditProfile extends Component {
           const data = new FormData(event.target); 
 
          
-          var user_name       = data.get('user_name');
-          var user_location   = data.get('user_location');   
-          var about_you       = data.get('about_you');   
+          var user_name       = $("#user_name").val();      //data.get('user_name');
+          var user_location   = $("#user_location").val();  //data.get('user_location');   
+          var about_you       = $("#about_you").val(); //data.get('about_you');   
          // var userpic         = data.get('userpic');
-          var user_id         = data.get('user_id');
+          var user_id         = $("#user_id").val(); //data.get('user_id');
 
         //  data.append('file', this.uploadInput.files[0]);
          
@@ -238,20 +238,20 @@ Upload
                   <div className="input-group">
                   <span className="input-group-addon"><i className="fa fa-user"></i></span>
             
-      <input type="hidden" value={sessionStorage.getItem('session_tokenid')} name="user_id"  />
-      <input id="login-username" type="text" ref="user_name"  value={this.state.userdata.name} onChange={this.handleChange} className="form-control" name="user_name" placeholder="Name" />
+      <input type="hidden" value={sessionStorage.getItem('session_tokenid')} name="user_id" id="user_id"  />
+      <input id="user_name" type="text" ref="user_name"  value={this.state.userdata.name} onChange={this.handleChange} className="form-control" name="user_name" placeholder="Name" />
       </div>           
       
                   <div className="input-group">
                   <span className="input-group-addon"><i className="fa fa-location-arrow"></i></span>
-                  <input id="pac-input" ref="user_location" value={this.state.userdata.location} onChange={this.handleChange} type="text" className="form-control" name="user_location" placeholder="Location" />
+                  <input id="user_location" ref="user_location" value={this.state.userdata.location} onChange={this.handleChange} type="text" className="form-control" name="user_location" placeholder="Location" />
                   
 
 
                   </div>
  <div className="input-group">
                   <span className="input-group-addon">Bio</span>
-                  <input id="pac-about" ref="about_you" value={this.state.userdata.about_you} onChange={this.handleChange} type="text" className="form-control" name="about_you" placeholder="About You" />
+                  <input id="about_you" ref="about_you" value={this.state.userdata.about_you} onChange={this.handleChange} type="text" className="form-control" name="about_you" placeholder="About You" />
                   
                   </div>
 

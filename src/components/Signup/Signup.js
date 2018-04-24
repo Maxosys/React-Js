@@ -14,6 +14,7 @@ class Signup extends Component {
       email: "",
       password:"",
       cpassword:"",
+      remember:"",
       successmsg:"",
       errormsg:"",
       showResults: false
@@ -25,7 +26,15 @@ class Signup extends Component {
 
   handleChange(event) {
 
-    this.setState({value: event.target.value});    
+    this.setState({
+
+      name: this.refs.name.value,
+      email: this.refs.email.value,
+      password: this.refs.password.value,
+      cpassword: this.refs.cpassword.value,
+      remember: this.refs.remember.value
+
+    });    
 
   }
 
@@ -45,11 +54,11 @@ class Signup extends Component {
    
         //alert('A name was submitted: ' + this.state.value);
 
-         const data = new FormData(event.target);
+    const data = new FormData(event.target);
 
          //data.append('client_id', config.APP_KEY);
 
-         console.log(data.get('name'));
+         //console.log(data.get('name'));
 
 	    /*
 	    const [month, day, year] = data.get('birthdate').split('/');
@@ -59,16 +68,18 @@ class Signup extends Component {
 	    */       
    
 
-      var username  = data.get('name');
-      var email     = data.get('email');
-      var password  = data.get('password');
-      var cpassword = data.get('cpassword');
-      var remember  = data.get('remember');
+      var username  = this.state.name;      //data.get('name');
+      var email     = this.state.email;     //data.get('email');
+      var password  = this.state.password;  //data.get('password');
+      var cpassword = this.state.cpassword; //data.get('cpassword');
+      var remember  = this.refs.remember.checked;//this.state.remember;  //data.get('remember');
+
+      
 
       if(!remember)
       {
-        alert("Agree Term and Conditions");
-        return ;
+          alert("Agree Term and Conditions");
+          return ;
       }
       
        if(password !== cpassword)
@@ -154,35 +165,35 @@ class Signup extends Component {
           <form onSubmit={this.handleSubmit}>
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-user"></i></span>
-              <input id="login-username" type="text" required className="form-control" name="name"  placeholder="Name"/>
+              <input id="login-username" type="text" required className="form-control" name="name"  ref="name" value={this.state.name} onChange={this.handleChange}  placeholder="Name"/>
             </div>
 
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-        <input id="login-email" type="text" required className="form-control" name="email"   placeholder="Email"/>
+        <input id="login-email" type="text" required className="form-control" name="email" ref="email" value={this.state.email} onChange={this.handleChange}  placeholder="Email"/>
             </div>   
 
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-lock"></i></span>
-              <input id="login-password" type="password" required className="form-control" name="password" placeholder="Password"/>
+              <input id="login-password" type="password" required className="form-control" name="password" ref="password" value={this.state.password} onChange={this.handleChange} placeholder="Password"/>
             </div>
 
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-lock"></i></span>
-              <input id="login-cpassword" type="password" required className="form-control" name="cpassword" placeholder="Confirm Password"/>
+              <input id="login-cpassword" type="password" required className="form-control" name="cpassword" ref="cpassword" value={this.state.cpassword} onChange={this.handleChange} placeholder="Confirm Password"/>
             </div>
               <div className="checkbox">
                 <label>
-                  <input type="checkbox" value="1" name="remember" id="login-remember"/> I agree to the Terms of Use and  Privacy Policy
+                  <input type="checkbox" required name="remember" id="login-remember" ref="remember" value={this.state.remember} onChange={this.handleChange}  /> I agree to the Terms of Use and  Privacy Policy
                 </label>
               </div>
             <button className="btn button--primary" type="submit">Sign UP <i aria-hidden="true" className="fa fa-angle-right"></i> </button>
 
-            <div className="chat-box-single-line">
+            <div className="chat-box-single-line hideclass">
               <abbr className="timestamp">or</abbr>
             </div>
 
-            <a className="btn btn-block btn-social btn-facebook" href="javascript:;"  >
+            <a className="btn btn-block btn-social btn-facebook hideclass" href="javascript:;"  >
               <span className="fa fa-facebook"></span> Sign UP with facebook
             </a>
 

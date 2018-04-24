@@ -1,7 +1,7 @@
 import React, { PropTypes, Component } from 'react';
 import classnames from 'classnames';
 import Header from '../Header/Header.js';
-
+import $ from 'jquery';
 class EditCommunityDetails extends Component {  
 
 
@@ -40,14 +40,14 @@ class EditCommunityDetails extends Component {
 
           const data = new FormData(event.target);        
 
-          var community_id          = data.get('community_id');
-          var community_owner_id    = data.get('community_owner_id');
-          var community_name        = data.get('community_name');
-          var community_size        = data.get('community_size');
-          var community_religion    = data.get('community_religion');
-          var community_spoken      = data.get('community_spoken');
-          var community_tagline     = data.get('community_tagline');
-          var comminty_desc         = data.get('comminty_desc');
+          var community_id          = $("#community_id").val();       //data.get('community_id');
+          var community_owner_id    = $("#community_owner_id").val(); //data.get('community_owner_id');
+          var community_name        = $("#community_name").val();     //data.get('community_name');
+          var community_size        = $("#community_size").val();     //data.get('community_size');
+          var community_religion    = $("#community_religion").val(); //data.get('community_religion');
+          var community_spoken      = $("#community_religion").val(); //data.get('community_spoken');
+          var community_tagline     = $("#community_tagline").val();  //data.get('community_tagline');
+          var comminty_desc         = $("#comminty_desc").val();      //data.get('comminty_desc');
 
           if(this.refs.community_visibility.checked)
           {
@@ -57,6 +57,8 @@ class EditCommunityDetails extends Component {
           {
            var community_visibility  = 'off'; 
           }
+          
+          alert(community_visibility);
 
           var community_status      = 1;
           var community_location    = ""; //data.get('community_location');
@@ -240,7 +242,7 @@ class EditCommunityDetails extends Component {
 
         return (
               <div className="input-group">
-                <select name="community_size" ref="community_size" onChange={this.handleChange} className="js-example-basic-hide-search">
+                <select id="community_size" name="community_size" ref="community_size" onChange={this.handleChange} className="js-example-basic-hide-search">
                <option value="">Community Size</option>
                     {optionsval}
                 </select>
@@ -265,7 +267,7 @@ class EditCommunityDetails extends Component {
             <div className="edit-details">
               <div className="input-group">
               
-          <input id="name"  type="text" required className="form-control" name="community_name" placeholder="Community Name" value={this.state.community_name} ref="community_name" onChange={this.handleChange}  />
+          <input id="community_name"  type="text" required className="form-control" name="community_name" placeholder="Community Name" value={this.state.community_name} ref="community_name" onChange={this.handleChange}  />
           <input type="hidden" name="community_owner_id" id="community_owner_id" value={sessionStorage.getItem('session_tokenid')}/>
           <input type="hidden" name="community_id" id="community_id" value={this.state.community_id}/>
               
@@ -279,7 +281,7 @@ class EditCommunityDetails extends Component {
               </div>
 
               <div className="input-group">
-                <input id="lang" type="text" required value={this.state.community_spoken} ref="community_spoken" onChange={this.handleChange} className="form-control" name="community_spoken" placeholder="Languages Spoken"/>
+                <input id="community_spoken" type="text" required value={this.state.community_spoken} ref="community_spoken" onChange={this.handleChange} className="form-control" name="community_spoken" placeholder="Languages Spoken"/>
               </div>
 
               <div className="input-group">
@@ -287,7 +289,7 @@ class EditCommunityDetails extends Component {
               </div>
 
               <div className="input-group">
-                <textarea className="form-control" name="comminty_desc" ref="comminty_desc" onChange={this.handleChange} placeholder="Community details...anything you  want others to know about your community">{this.state.comminty_desc}</textarea>
+                <textarea id="comminty_desc" className="form-control" name="comminty_desc" ref="comminty_desc" onChange={this.handleChange} placeholder="Community details...anything you  want others to know about your community">{this.state.comminty_desc}</textarea>
               </div>
 
               <label className="switch">

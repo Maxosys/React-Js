@@ -126,10 +126,10 @@ profilePicUserByid(uid) {
 
           const data = new FormData(event.target);   
 
-          var sender_id    =  data.get('sender_id');
-          var reciver_id   =  data.get('reciver_id');
-          var community_id =  data.get('community_id');
-          var msg_text     =  data.get('msg_text');
+          var sender_id    = $("#sender_id").val();    // data.get('sender_id');
+          var reciver_id   = $("#reciver_id").val();   // data.get('reciver_id');
+          var community_id = $("#community_id").val(); // data.get('community_id');
+          var msg_text     = $("#msg_text").val();     // data.get('msg_text');
 
           if(msg_text === "")
           {
@@ -470,11 +470,11 @@ getConversationRowTo()
           <div className="message-input"> 
               <div className="wrap">
               
-              <input type="hidden" name="sender_id" value={this.props.params.fromid} />
-              <input type="hidden" name="reciver_id" value={this.props.params.toid} />
-              <input type="hidden" name="community_id" value={this.props.params.cid} />
+              <input type="hidden" id="sender_id" name="sender_id" value={this.props.params.fromid} />
+              <input type="hidden" id="reciver_id" name="reciver_id" value={this.props.params.toid} />
+              <input type="hidden" id="community_id" name="community_id" value={this.props.params.cid} />
             
-              <input type="text" autoComplete="off" onChange={this.handleChange} value={this.state.value} name="msg_text" className="messagetext" placeholder="Write your message..." />
+              <input type="text" id="msg_text" autoComplete="off" onChange={this.handleChange} value={this.state.value} name="msg_text" className="messagetext" placeholder="Write your message..." />
 
               <div className="chat-btn"><button type="submit" className="button--primary">Send</button></div>
               </div>

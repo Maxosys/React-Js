@@ -2,7 +2,7 @@
 #errormsgdiv .close {text-indent: -999px; }
 .globemapcss { width:600px;height:400px; padding:2px; }
 .info_message {font-size: 14px; max-width: 260px; }
-
+.hideclass {display: block;}
 .switch {
   position: relative;
   display: inline-block;
@@ -104,3 +104,22 @@ text-align: left;
 .simplecase{
   text-transform:none;
 }
+
+.linkclass {color:#65BA3D; }
+
+.uploadfile h3 {padding: 10px; color: #92B75E}
+.highlightownercommunity {background: #92B75E}
+
+
+#left-menu .notificationdiv {border: medium none; border-radius: 0; box-shadow: 12px 15px 20px 0 rgba(46, 61, 73, 0.15); top: 61px !important; width: 250px !important; }
+
+ul.dropdown-menu.notificationdiv {
+    word-wrap: break-word;
+    left: inherit !important;
+}
+.notificationdiv a {
+    white-space: normal !important;
+    line-height: 1.2 !important;
+    padding: 10px 15px !important;
+} 
+

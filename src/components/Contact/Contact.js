@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Header from '../Header/Header.js';
+import $ from 'jquery';
 
 class Contact extends Component {  
 
@@ -33,10 +34,10 @@ class Contact extends Component {
 
           const data = new FormData(event.target);        
 
-          var name       = data.get('name');
-          var email      = data.get('email');
-          var subject    = data.get('subject');
-          var message    = data.get('message');
+          var name       = $("#name_con_id").val(); //data.get('name');
+          var email      = $("#email_con_id").val(); //data.get('email');
+          var subject    = $("#subject_con_id").val(); //data.get('subject');
+          var message    = $("#message_con_id").val(); //data.get('message');
          
            var userdata = {name:name,
             email:email,
@@ -93,22 +94,22 @@ class Contact extends Component {
           <form onSubmit={this.handleSubmit}>
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-user"></i></span>
-              <input id="login-username" type="text" required className="form-control" name="name"  placeholder="Name" />
+              <input id="name_con_id" type="text" required className="form-control" name="name"  placeholder="Name" />
             </div>
 
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-              <input id="login-username" type="text" required className="form-control" name="email"  placeholder="Email" />
+              <input id="email_con_id" type="text" required className="form-control" name="email"  placeholder="Email" />
             </div>   
 
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-pencil"></i></span>
-              <input id="login-password" type="text" required className="form-control" name="subject" placeholder="Subject" />
+              <input id="subject_con_id" type="text" required className="form-control" name="subject" placeholder="Subject" />
             </div>
 
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-comment"></i></span>
-              <textarea placeholder="Message" name="message" required className="form-control"></textarea>
+              <textarea id="message_con_id" placeholder="Message" name="message" required className="form-control"></textarea>
             </div>
             <button className="btn button--primary" type="submit">Submit <i aria-hidden="true" className="fa fa-angle-right"></i> </button>
 

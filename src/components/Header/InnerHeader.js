@@ -12,7 +12,7 @@ export default class InnerHeader extends React.Component {
 
     // console.log(this.props.router);
 
-    this.state = { hits: null,sessionStatus:false , unreadmsgcount: 0  };
+    this.state = { hits: null,sessionStatus:false , unreadmsgcount: 0 , notificationArr: [] };
 
     this.st  = false;   
 
@@ -46,18 +46,59 @@ export default class InnerHeader extends React.Component {
        //this.props.router.push('/search/'+searchstr);     
   }
 
+  
+
+  triggerFunHead()
+  {
+    if(sessionStorage.getItem('session_tokenid') && !sessionStorage.getItem('asession_tokenid'))
+    {
+      var fromid = sessionStorage.getItem('session_tokenid');
+     //      this.abc1();
+          
+    }
+    else
+    {
+      console.log("iTribe");
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
+
  componentDidMount() {
 
     if(sessionStorage.getItem('session_tokenid') && !sessionStorage.getItem('asession_tokenid'))
-    {
+    {      
+      this.interval = setInterval(this.triggerFunHead, 5000);
+
       var fromid = sessionStorage.getItem('session_tokenid');
 
 
       this.callApiMsgTotalCount(fromid)      
       .then(result => this.setState({unreadmsgcount : result[0].unreadmsg}));
+    
+
+      this.callApiNotification(fromid)      
+      .then(result => this.setState({notificationArr : result}));
     }
 
   }
+  // notification
+     callApiNotification = async (cstr) => {
+
+      const response = await fetch('/api/getnotifications?userid='+cstr,{
+      method: 'GET',   
+      headers: {"pragma": "no-cache","cache-control" : "no-cache"}
+      });
+
+      const body = await response.json();
+
+      if (response.status !== 200) throw Error(body.message);
+
+      return body;
+  
+  } 
 
     callApiMsgTotalCount = async (cstr) => {
 
@@ -131,12 +172,12 @@ export default class InnerHeader extends React.Component {
               <ul className="dropdown-menu" role="menu">
                       <li><a href="/my-community">My Community</a></li>
                       <li><a href="/joined-communities">My Joined Communities</a></li>
-                      <li><a href="/addcommunity">Add Community</a></li>
-                       {/*<li><a href="/library">Library</a></li>*/}
+                      <li><a href="/pending-communities">Approval Pending Communities</a></li>
+                      <li><a href="/addcommunity">Add Community</a></li>                      
                       <li><a href="/invite-newmember">Invite New Members</a></li>
                       <li><a href="/pending-request">Pending Join Requests</a></li>
-                      {/*<li><a href="/edit-community-details">Edit Community Details</a></li>*/}
-                      {/*<li><a href="/">Add Video/Audio/Documents</a></li>*/}
+                      
+                     
               </ul>
             </li>
             <li className="furtherlinks"><a href="/community-display">Other Communities</a></li> 
@@ -167,6 +208,10 @@ export default class InnerHeader extends React.Component {
   }
 
   renderLoginSignupNavigations() {
+
+
+
+
         return (
               
             <ul className="nav navbar-nav navbar-right" id="left-menu">
@@ -204,6 +249,39 @@ export default class InnerHeader extends React.Component {
     )
   }
 
+notifications() {
+
+ console.log(this.state.notificationArr);
+ // sid: 2, rid: 19, countnotifiction: 1, sendername: "ABC", lastmsg: "Pending community join requests"
+
+  return(
+
+     <ul className="dropdown-menu notificationdiv" role="menu">  
+     { this.state.notificationArr[0]?
+    
+      this.state.notificationArr.map(member =>                 
+        
+        <li class="dropdown-submenu" >
+
+      { member.lastmsg == 'Pending community join requests' ?
+
+         <a href="/pending-request"> <strong>{member.sendername}</strong>: Community join requests </a> 
+      :
+        <a href={"/message/"+member.rid+"/"+member.sid+"/0"}> <strong>{member.sendername}</strong>: {member.lastmsg} </a> 
+      }
+        
+        </li>
+
+        )
+
+        :
+        ''
+    }
+     </ul>
+  )
+}
+
+
 displayMessageCounts(counts)
 {
   if(counts==0)
@@ -214,9 +292,9 @@ displayMessageCounts(counts)
   }
   else
   {
-    return(
-    <span className="count">{counts}</span>
-  )
+      return(
+      <span className="count">{counts}</span>
+    )
   }
   
 
@@ -232,8 +310,8 @@ displayMessageCounts(counts)
                   <ul className="dropdown-menu" role="menu">
                     <li><a href="/my-community">My Community</a></li>
                      <li><a href="/joined-communities">My Joined Communities</a></li>
-                    <li><a href="/addcommunity">Add Community</a></li>
-                    {/*<li><a href="/library">Library</a></li>*/}
+                     <li><a href="/pending-communities">Approval Pending Communities</a></li>
+                    <li><a href="/addcommunity">Add Community</a></li>                   
                     <li><a href="/invite-newmember">Invite New Members</a></li>
                     <li><a href="/pending-request">Pending Join Requests</a></li>
               
@@ -275,8 +353,15 @@ displayMessageCounts(counts)
 
                   </ul>
                 </li>
-                <li className="inboxs"><a href="/message"><i className="icon inbox"></i> {this.displayMessageCounts(this.state.unreadmsgcount)} </a></li>
-   
+  
+  {/*<li className="inboxs"><a href="/message"><i className="icon inbox"></i> {this.displayMessageCounts(this.state.unreadmsgcount)} </a></li>*/}
+      
+  <li className="inboxs furtherlinks show-on-hover ">
+    <a href="#iq-home" className="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><i className="icon inbox"></i> {this.displayMessageCounts(this.state.unreadmsgcount)} </a>
+     
+     {this.notifications()}    
+
+  </li>        
               </ul>
           )
        }
@@ -360,7 +445,38 @@ displayMessageCounts(counts)
                   <li><a className="inline-option" href="/logout">Logout</a></li>
                 </ul>
             </li>
-            <li className="inboxs"><a href="/message"><i className="icon inbox"></i> {this.displayMessageCounts(this.state.unreadmsgcount)} </a></li>
+            {/*<li className="inboxs"><a href="/message"><i className="icon inbox"></i> {this.displayMessageCounts(this.state.unreadmsgcount)} </a></li>*/}
+          
+    <li className="inboxs show-on-hover ">
+    <a href="#iq-home" className="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><i className="icon inbox"></i> {this.displayMessageCounts(this.state.unreadmsgcount)} </a>
+     
+     <ul className="dropdown-menu user-account-menu simple pull-right">                   
+        
+         { this.state.notificationArr[0]?
+    
+      this.state.notificationArr.map(member =>                 
+        
+        <li class="dropdown-submenu" >
+
+      { member.lastmsg == 'Pending community join requests' ?
+
+         <a href="/pending-request"> <strong>{member.sendername}</strong>: Community join requests </a> 
+      :
+        <a href={"/message/"+member.rid+"/"+member.sid+"/0"}> <strong>{member.sendername}</strong>: {member.lastmsg} </a> 
+      }
+        
+        </li>
+
+        )
+
+        :
+        ''
+      }                              
+     </ul>
+
+   </li>  
+
+
           </div>
         }
             {this.renderMobileLoginSignupNavigations()}

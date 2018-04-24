@@ -33,8 +33,16 @@ constructor(props) {
 
 handleChange(event) {
 
-    //console.log(event);
-    //this.setState({username: event.target.username,password:event.target.password});    
+  //alert(event.target.username);
+  //alert(event.target.password);
+  
+  this.setState({
+      
+      username: this.refs.username.value,
+      password: this.refs.password.value,
+      usernameemail: this.refs.usernameemail.value
+
+    });
 
   }
 
@@ -53,8 +61,11 @@ handleChange(event) {
         
        const data = new FormData(event.target);
 
-        var email     = data.get('username');
-        var password  = data.get('password');
+        //alert(this.state.username);
+        //alert(this.state.password);
+
+        var email     = this.state.username;//data.get('username');
+        var password  = this.state.password;//data.get('password');
 
         var userdata = {email:email,inckey:password};
         
@@ -82,6 +93,8 @@ handleChange(event) {
            .catch( (ex) => {
               console.log('parsing failed', ex)
           });
+
+            event.preventDefault();
   }
 
    onSetResult = (result) => {
@@ -109,7 +122,7 @@ handleChange(event) {
         
        const data = new FormData(event.target);
 
-       var email     = data.get('usernameemail');       
+       var email     = this.state.usernameemail;//data.get('usernameemail');       
 
         var userdata = {email:email};
         
@@ -223,7 +236,7 @@ handleChange(event) {
         <div className="input-container PosR">
           <div className="input-group">
             <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-            <input id="usernameemail" type="text" className="form-control" name="usernameemail" placeholder="Email" />
+            <input id="usernameemail" type="text" className="form-control" ref="usernameemail" name="usernameemail" placeholder="Email"  value={this.state.usernameemail} onChange={this.handleChange}/>
           </div>
           <input type="submit"  value="Send Email" id="submitReset" className="btn btn-block btn-primary btn-login center-block" />
         </div>
@@ -244,20 +257,20 @@ handleChange(event) {
           <form  onSubmit={this.handleSubmit} >
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-user"></i></span>
-              <input id="login-username" required type="text" className="form-control" name="username" placeholder="Email" />                                        
+              <input id="login-username" required type="text" className="form-control" name="username"  placeholder="Email"  ref="username" value={this.state.username} onChange={this.handleChange} />                                        
             </div>           
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-lock"></i></span>
-              <input id="login-password" required type="password" className="form-control" name="password" placeholder="Password" />
+              <input id="login-password" required type="password" className="form-control" name="password" ref="password" placeholder="Password" value={this.state.password} onChange={this.handleChange} />
             </div>
             <a className="lostLink" href="#" data-toggle="modal" data-target="#basicModal">Forget password?</a>
             <button className="btn button--primary" type="submit">Log in <i aria-hidden="true" className="fa fa-angle-right"></i> </button>
 
-            <div className="chat-box-single-line">
+            <div className="chat-box-single-line ">
               <abbr className="timestamp">or</abbr>
             </div>
 
-            <a className="btn btn-block btn-social btn-facebook" href="javascript:;"  >
+            <a className="btn btn-block btn-social btn-facebook hideclass" href="javascript:;"  >
               <span className="fa fa-facebook"></span> login with facebook
             </a>
 

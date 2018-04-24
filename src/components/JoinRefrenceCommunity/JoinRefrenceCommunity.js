@@ -57,8 +57,6 @@ class JoinRefrenceCommunity extends Component {
 
          //data.append('client_id', config.APP_KEY);
 
-         console.log(data.get('name'));
-
       /*
       const [month, day, year] = data.get('birthdate').split('/');
       const serverDate = `${year}-${month}-${day}`;
@@ -67,14 +65,14 @@ class JoinRefrenceCommunity extends Component {
       */       
    
 
-      var username  = data.get('name');
-      var email     = data.get('email');
-      var password  = data.get('password');
-      var cpassword = data.get('cpassword');
-      var remember  = data.get('remember');
-      var invitation_id  = data.get('invitation_id');
-      var owner_user_id  = data.get('owner_user_id');
-      var community_id  = data.get('community_id');
+      var username  = $("#name").val(); //data.get('name');
+      var email     = $("#email").val(); //data.get('email');
+      var password  = $("#password").val(); //data.get('password');
+      var cpassword = $("#cpassword").val(); //data.get('cpassword');
+      var remember  = $("#remember").val(); //data.get('remember');
+      var invitation_id  = $("#invitation_id").val(); //data.get('invitation_id');
+      var owner_user_id  = $("#owner_user_id").val(); //data.get('owner_user_id');
+      var community_id   = $("#community_id").val(); //data.get('community_id');
 
       if(!remember)
       {
@@ -240,29 +238,29 @@ class JoinRefrenceCommunity extends Component {
         <form onSubmit={this.handleJoin}>
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-user"></i></span>
-              <input type="hidden" value={this.state.user_id} name="owner_user_id" />
-              <input type="hidden" value={this.state.invitation_id} name="invitation_id" />             
-              <input type="hidden" value={this.state.community_id} name="community_id" />             
-              <input id="login-username" type="text" required className="form-control" name="name"  placeholder="Name"/>
+              <input type="hidden" value={this.state.user_id} name="owner_user_id" id="owner_user_id" />
+              <input type="hidden" value={this.state.invitation_id} name="invitation_id" id="invitation_id" />             
+              <input type="hidden" value={this.state.community_id} name="community_id"  id="community_id"/>             
+              <input type="text" required className="form-control" name="name" id="name"  placeholder="Name"/>
             </div>
 
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-        <input id="login-email" type="text" readonly className="form-control" name="email" value={this.state.user_emailid}   placeholder="Email"/>
+        <input id="email" type="text" readonly className="form-control" name="email" value={this.state.user_emailid}   placeholder="Email"/>
             </div>   
 
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-lock"></i></span>
-              <input id="login-password" type="password" required className="form-control" name="password" placeholder="Password"/>
+              <input id="password" type="password" required className="form-control" name="password" placeholder="Password"/>
             </div>
 
             <div className="input-group">
               <span className="input-group-addon"><i className="fa fa-lock"></i></span>
-              <input id="login-cpassword" type="password" required className="form-control" name="cpassword" placeholder="Confirm Password"/>
+              <input id="cpassword" type="password" required className="form-control" name="cpassword" placeholder="Confirm Password"/>
             </div>
               <div className="checkbox">
                 <label>
-                  <input type="checkbox" value="1" name="remember" id="login-remember"/> I agree to the Terms of Use and  Privacy Policy
+                  <input type="checkbox" value="1" name="remember" id="remember"/> I agree to the Terms of Use and  Privacy Policy
                 </label>
               </div>
             <button className="btn button--primary" type="submit">Join  <i aria-hidden="true" className="fa fa-angle-right"></i> </button>

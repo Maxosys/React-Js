@@ -49,17 +49,27 @@ class AddMyCommunity extends Component {
 
           const data = new FormData(event.target);        
 
-          var community_owner_id    = data.get('community_owner_id');
-          var community_name        = data.get('community_name');
-          var community_size        = data.get('community_size');
-          var community_religion    = data.get('community_religion');
-          var community_spoken      = data.get('community_spoken');
-          var community_tagline     = data.get('community_tagline');
-          var comminty_desc         = data.get('comminty_desc');
-          var community_visibility  = data.get('community_visibility');
+          var community_owner_id    = $("#community_owner_id").val();//data.get('community_owner_id');
+          var community_name        = $("#community_name").val();//data.get('community_name');
+          var community_size        = $("#community_size").val();//data.get('community_size');
+          var community_religion    = $("#community_religion").val();//data.get('community_religion');
+          var community_spoken      = $("#community_spoken").val();//data.get('community_spoken');
+          var community_tagline     = $("#community_tagline").val();//data.get('community_tagline');
+          var comminty_desc         = $("#comminty_desc").val();//data.get('comminty_desc');
+          var community_visibility  = $("#community_visibility").is(":checked");//data.get('community_visibility');
           var community_status      = 0;
-          var community_location    = data.get('community_location');
-          var community_lat_long    = data.get('community_lat_long');
+          var community_location    = $("#community_location").val();//data.get('community_location');
+          var community_lat_long    = $("#community_lat_long").val();//data.get('community_lat_long');
+
+
+          if(community_visibility)
+          {
+            var community_visibility  = 'on';
+          }
+          else
+          {
+            var community_visibility  = 'off'; 
+          }         
 
           if(community_lat_long == "")
           {
@@ -108,7 +118,7 @@ class AddMyCommunity extends Component {
         
         if(result.community_id)
         {
-          this.setState({ successmsg: " Community successfully created.Wait for admin approval ",showResults:true})
+          this.setState({ successmsg: " Community successfully created. Wait for admin approval ",showResults:true})
 
 
         }
@@ -172,7 +182,7 @@ class AddMyCommunity extends Component {
             <form onSubmit={this.handleCommunitySubmit}>
               <div className="edit-details">
                   <div className="input-group">
-                    <input id="name" type="text" required className="form-control" name="community_name" ref="community_name" onChange={this.handleChange} value={this.state.community_name}  placeholder="Community Name" />
+                    <input id="community_name" type="text" required className="form-control" name="community_name" ref="community_name" onChange={this.handleChange} value={this.state.community_name}  placeholder="Community Name" />
                     
                     <input type="hidden" name="community_owner_id" id="community_owner_id" value={sessionStorage.getItem('session_tokenid')}/>
                     <input type="hidden" name="community_lat_long" id="community_lat_long" />
@@ -182,7 +192,7 @@ class AddMyCommunity extends Component {
                   
 
                   <div className="input-group" >
-                    <select name="community_size" className="js-example-basic-hide-search" required>
+                    <select id="community_size" name="community_size" className="js-example-basic-hide-search" required>
                       <option value="">Community Size</option>
                       <option value="1">1-10</option>
                       <option value="2">10-100</option>
@@ -201,18 +211,18 @@ class AddMyCommunity extends Component {
                   </div>
 
                   <div className="input-group">
-                    <input id="community_tagline" required type="text" className="form-control" name="community_tagline" placeholder="Community Tag Line" />
+                    <input id="community_tagline" required type="text" className="form-control" name="community_tagline" placeholder="Short community description" />
                   </div>
 
                   <div className="input-group">
-                    <textarea className="form-control" name="comminty_desc" placeholder="Other details we should know"></textarea>
+                    <textarea id="comminty_desc" className="form-control" name="comminty_desc" placeholder="Other details we should know"></textarea>
                   </div>
 
                   <label className="switch">
-                    <input  name="community_visibility" defaultChecked={this.state.chkbox} onChange={this.handleChangeChk}  type="checkbox"  />
+                    <input id="community_visibility" name="community_visibility" defaultChecked={this.state.chkbox} onChange={this.handleChangeChk}  type="checkbox"  />
                     <span className="slider round" ></span>
                     
-                  </label> <span class="vis">Make community visible to all?</span>
+                  </label> <span className="vis">Make community visible to all?</span>
                   <button className="btn button--primary" type="submit">Submit <i aria-hidden="true" className="fa fa-angle-right"></i> </button>
               </div>
             </form>

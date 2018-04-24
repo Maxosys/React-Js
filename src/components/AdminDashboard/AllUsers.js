@@ -22,9 +22,14 @@ class AllUsers extends Component {
     errormsg:"",
     showResults: false
     }
-
+    this.onClick = this.onClick.bind(this);
   }
 
+onClick(event,user_id) {     
+
+      this.onDeleteUsers(event,user_id)
+      .then((joinresp) => {console.log(joinresp) });   
+  }
 
   componentDidMount() {
       
@@ -57,7 +62,32 @@ class AllUsers extends Component {
       return body;
   }
 
+onDeleteUsers(event,user_id)
+  {
 
+        const response =  fetch('/api/delete_users?user_id='+user_id,{
+        method: 'GET',         
+        headers: {"pragma": "no-cache","cache-control" : "no-cache"}
+        }).then( (response) => {
+        return response.json()
+        })
+        .then( (json) => {
+
+          console.log('parsed json', json);
+         
+     
+
+          alert(json.msg);         
+
+        })
+        .catch( (ex) => {
+        console.log('parsing failed', ex)
+        });   
+
+          this.callApi()      
+      //.then(res => res.json())
+      .then(members => this.setState({ members: members }));  
+  }
 
 
   render() {
@@ -77,6 +107,7 @@ class AllUsers extends Component {
                   <th>Firstname</th>                  
                   <th>Email</th>
                   <th>Location</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -88,21 +119,12 @@ class AllUsers extends Component {
                   <td>{member.name}</td>
                   <td>{member.email}</td>
                   <td>{member.location}</td>
-
+                  <td><button onClick={(event) => { this.onDeleteUsers(event,member.id); }} > Delete </button></td>
                 </tr>
                 
                 )}
 
-                <tr tabindex="2">
-                  <td>Mary</td>
-                  <td>Moe</td>
-                  <td>mary@example.com</td>
-                </tr>
-                <tr tabindex="3">
-                  <td>July</td>
-                  <td>Dooley</td>
-                  <td>july@example.com</td>
-                </tr>
+               
               </tbody>
             </table>
           </div>

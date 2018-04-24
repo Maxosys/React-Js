@@ -2,6 +2,7 @@
 import React, { PropTypes, Component } from 'react';
 import classnames from 'classnames';
 import Header from '../Header/Header.js';
+import $ from 'jquery';
 
 class Library extends Component {  
 
@@ -24,6 +25,7 @@ class Library extends Component {
       community_name:"",
       community_id:"",
       community_tagline:"",
+      community_owner_id:"",
       uploadedfileextension:"",
       uploadedfile:"",
       library_tagline:""
@@ -45,6 +47,7 @@ class Library extends Component {
        let form = new FormData(this.refs.addComponentForm);
         form.append('libfiles', this.uploadInput.files[0]);
 
+         $("#loadingDiv").show();
         // data.append('file', this.uploadInput.files[0]);
 
        // console.log(form);
@@ -58,10 +61,8 @@ class Library extends Component {
           body: form
         }).then((res) => {console.log('res of fetch', res)
 
-        this.setState({ successmsg: "Library successfully added",showResults:true,library_tagline:"" }
-
-
-        );
+        this.setState({ successmsg: "Library successfully added",showResults:true,library_tagline:"" });
+         $("#loadingDiv").hide();
         document.location.reload();
       });
   }
@@ -119,7 +120,8 @@ class Library extends Component {
           this.setState({
             community_name :communitydata[0]['community_name'],
             community_id :communitydata[0]['community_id'],
-            community_tagline :communitydata[0]['community_tagline']          
+            community_tagline :communitydata[0]['community_tagline'],
+            community_owner_id :communitydata[0]['community_owner_id']
           });
 
         });
@@ -198,7 +200,11 @@ class Library extends Component {
         });
     }
 
-
+imgview() {
+  return (
+           <img width="320" height="240" src={'/uploads/library/'+this.state.uploadedfile} />
+  )
+}
 
 Videoclip() {
   return (
@@ -217,7 +223,15 @@ displaylibraryinfo() {
         <div className="uploadfile">          
 
           <h3>  <a href={'/uploads/library/'+this.state.uploadedfile}> {member.originalname} </a> </h3>
-                 
+           
+
+          {
+            member.file_extension.split('/')[0] == 'image' ? 
+            this.imgview()
+            :
+            ''
+          }
+
           {
             this.state.uploadedfileextension == 'mp4' ? 
             this.Videoclip()
@@ -234,7 +248,7 @@ displaylibraryinfo() {
               <span className="members-name">Member Name</span>
               <span className="author">By {member.name}</span>
             </div>
-            <div className="date">February 11, 2014 {member.created_at} </div>
+            <div className="date"> {member.created_at} </div>
             <p>{member.library_subtitle}</p>
             <p>{member.library_desc}</p>
           </div>
@@ -249,22 +263,137 @@ displaylibraryinfo() {
     }
 
 
+displaythumbnail(fextension,fname)
+{
+  var ext_var = fextension.split('/')[1];
+
+  if( ext_var == 'mp4')
+  {
+      return(
+              <i className="fa fa-file-video-o" aria-hidden="true"></i>
+      )
+  }
+  else if(ext_var == 'jpg' || ext_var == 'jpeg' || ext_var == 'png')
+  {
+    return(
+            <img width="60" height="50" src={'/uploads/library/'+fname} />
+    )
+  }
+  else if(ext_var == 'pdf')
+  {
+    return(
+            <i className="fa fa-file-pdf-o" aria-hidden="true"></i>
+    )
+  }
+  else
+  { 
+    return(
+            <i className="fa fa-file-o" aria-hidden="true"></i>
+    )
+
+  }
+
+}
+
+addLibForm()
+{
+  var currentUserLib = false;
+
+    if(this.state.community_owner_id == sessionStorage.getItem('session_tokenid'))
+    {
+        currentUserLib = true;
+    }
+
+ 
+  return(
+
+   <form ref="addComponentForm" encType="multipart/form-data"   onSubmit={this.handleLibrarySubmit} >
+
+   { currentUserLib ?
+    
+      <div className="col-sm-7">
+        <div className="uploadfile">
+          
+          <h3 title="(jpeg|jpg|png|gif|pdf|doc|docx|mp4)"> You Can Upload Your Files </h3>
+          <small>(Document/Video/Audio file)</small>
+          {/*<input type="file" ref={(ref) => { this.uploadInput = ref; }} id="libfileid" className="userprofilepic"  />*/}
+          <input type="hidden" value={this.state.community_id} name="cid"   />
+          <input type="hidden" value={sessionStorage.getItem('session_tokenid')} name="user_id"   />
+          
+          {/*<button  className="btn button--primary libuploadbtn" id="libuploadbtn" type="button">
+            <i className="fa fa-upload" aria-hidden="true"></i>  Upload 
+          </button>*/}
+           <input type="file" ref={(ref) => { this.uploadInput = ref; }} id="libfileid" className="btn button--primary"  />
+          
+          </div>
+          <div className="discreption">                              
+                <label> Component Subtitle </label>
+                <input id="library_tagline" value={this.state.library_tagline} required type="text" className="form-control" name="library_tagline" ref="library_tagline" onChange={this.handleChange}  />
+                <label> Component Description </label>          
+                <textarea className="form-control" required name="library_desc" ></textarea>                
+                <button className="btn button--primary" type="submit">Add Component  <i aria-hidden="true" className="fa fa-angle-right"></i> </button>
+          </div>
+      </div>
+      
+      :
+
+      <div className="col-sm-7">
+        <div className="uploadfile">
+        <p>Select uploaded documents </p>
+        </div>
+      </div>    
+    }
+
+ </form>
+
+  )
+
+ 
+
+}
 
 
-  render() {
+  setLibraryLink()  {
+
+        if(this.state.communitydata[0])
+        {
+            var newObj =  this.state.communitydata[0];
+            if(newObj.community_owner_id == sessionStorage.getItem('session_tokenid'))
+            {
+                  return(
+
+              <a href={"/library/"+this.props.params.cid}> | Add documents to the community library </a>
+                    )
+            }
+            else
+            {
+                  return(
+                   <a href={"/library/"+this.props.params.cid}> | View Documents </a>
+                  )  
+            }
+        }
+  }
+
+
+
+render() {
     const { className, ...props } = this.props;
 
     var datast = false;
+  
+
 
     if(this.state.librarydata[0])
     {
       datast = true;
     }
 
+  
+
 
   return (
   
-  <div className={classnames('About', className)} {...props}>
+  <div className={classnames('About', className)} >
   
   <Header displaymessage={this.state.successmsg} showResults={this.state.showResults} />
 		
@@ -273,7 +402,7 @@ displaylibraryinfo() {
       <div className="title">
 
     <h3>
-      <a href={"/library/"+this.state.community_id} > {this.state.community_name} Community Library </a>
+      <a className="linkclass" href={"/library/"+this.state.community_id} > {this.state.community_name} Community Library  </a> {this.setLibraryLink()} 
 
       </h3><div className="sep"><img src="/images/sep.jpg" alt="" /></div></div>
      {/* <div className="breadcrums-search communtiesitribe">
@@ -304,7 +433,9 @@ displaylibraryinfo() {
           
               <li key={member.library_id} >
               <div className="thumbnail-icon">
-                <i className="fa fa-file-o" aria-hidden="true"></i>
+               
+                {this.displaythumbnail(member.file_extension,member.filename)}
+
               </div>
               <div className="thumnbcontent">
                 
@@ -329,43 +460,11 @@ displaylibraryinfo() {
 
         this.props.params.libid ? 
 
-      this.displaylibraryinfo()
+      this.displaylibraryinfo()  
 
-  
-
-      :
-
- <form ref="addComponentForm" encType="multipart/form-data"  onSubmit={this.handleLibrarySubmit} >
-
-      <div className="col-sm-7">
-        <div className="uploadfile">
+      :                
+            this.addLibForm()  
           
-          <h3 title="(jpeg|jpg|png|gif|pdf|doc|docx|mp4)"> You Can Upload Your Files </h3>
-          <small>(Document/Video/Audio file)</small>
-          <input type="file" ref={(ref) => { this.uploadInput = ref; }} id="libfileid" className="userprofilepic"  />
-          <input type="hidden" value={this.state.community_id} name="cid"   />
-          <input type="hidden" value={sessionStorage.getItem('session_tokenid')} name="user_id"   />
-          <button  className="btn button--primary libuploadbtn" id="libuploadbtn" type="button">
-          <i className="fa fa-upload" aria-hidden="true"></i>  Upload </button>
-        </div>
-
-        <div className="discreption">                   
-           
-             <label> Component Subtitle </label>
-
-                <input id="library_tagline" value={this.state.library_tagline} required type="text" className="form-control" name="library_tagline" ref="library_tagline" onChange={this.handleChange}  />
-            
-                <label> Component Description </label>
-          
-                <textarea className="form-control" required name="library_desc" ></textarea>
-                
-                <button className="btn button--primary" type="submit">Add Component  <i aria-hidden="true" className="fa fa-angle-right"></i> </button>
-          </div>
-
-      </div>
- </form>
-
-        
 
         }
 

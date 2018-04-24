@@ -31,17 +31,43 @@ class AllCommunity extends Component {
 
   }
 
-  onClick(event,cid,statusset,member) {
+  onClick(event,cid,statusset,member,uid) {
 
-      this.onApproveCommunity(event,cid,statusset,member)
-      .then((joinresp) => {console.log(joinresp) });     
+      this.onApproveCommunity(event,cid,statusset,member,uid)
+      .then((joinresp) => {console.log(joinresp) });   
+
+      this.onDeleteCommunity(event,cid)
+      .then((joinresp) => {console.log(joinresp) });   
   }
 
-  onApproveCommunity(event,commun_id,statusset,member) {
-    
+  onDeleteCommunity(event,commun_id)
+  {
+        const response =  fetch('/api/delete_community?community_id='+commun_id,{
+        method: 'GET',         
+        headers: {"pragma": "no-cache","cache-control" : "no-cache"}
+        }).then( (response) => {
+        return response.json()
+        })
+        .then( (json) => {
+
+          console.log('parsed json', json);
+         
+       this.callApiGetAllCommunity()
+      .then((communitydata) => {this.setState({ communitydata: communitydata }) });
+
+          alert(json.msg);         
+
+        })
+        .catch( (ex) => {
+        console.log('parsing failed', ex)
+        });     
+  }
+
+  onApproveCommunity(event,commun_id,statusset,member,uid) {
+
        console.log(member);
 
-        const response =  fetch('/api/communitystatusadmin?commun_id='+commun_id+'&statusset='+statusset,{
+        const response =  fetch('/api/communitystatusadmin?commun_id='+commun_id+'&statusset='+statusset+'&user_id='+uid,{
         method: 'GET',         
         headers: {"pragma": "no-cache","cache-control" : "no-cache"}
         }).then( (response) => {
@@ -51,14 +77,7 @@ class AllCommunity extends Component {
 
           console.log('parsed json', json);
           
-         // community_status
-
-          //this.props.router.push('/dashboard/all-community');
-
-       this.callApiGetAllCommunity()
-      .then((communitydata) => {this.setState({ communitydata: communitydata })
-      });
-
+         // community_status    
           alert(json.msg);
           //console.log('parsed json', json)
 
@@ -134,14 +153,14 @@ class AllCommunity extends Component {
 
               {this.state.communitydata.map(member =>
 
-                <tr tabindex="1">
+                <tr tabindex="1" key={member.community_id}>
                   <td>{member.community_name}</td>
                   <td>{member.community_tagline}</td>
                   <td>{member.name}</td>
                   <td>{member.community_visibility}</td>
                   <td> <a target="_blank" href={'/members-card/'+member.community_id} className="view-detail">View details</a> </td>
                   <td> {member.community_status? 'Approved' : 'Not Approve'}  </td>
-                  <td> <button onClick={(event) => { this.onApproveCommunity(event,member.community_id,1,member); }} > Approve </button>  </td>
+                  <td> <button onClick={(event) => { this.onApproveCommunity(event,member.community_id,1,member,member.community_owner_id); }} > Approve </button> | <button onClick={(event) => { this.onDeleteCommunity(event,member.community_id); }}> Delete </button> </td>
                  
                 </tr>
               )}

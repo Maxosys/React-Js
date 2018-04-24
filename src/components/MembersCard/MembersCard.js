@@ -43,7 +43,7 @@ class MembersCard extends Component {
       .then((communitydata) => {this.setState({ communitydata: communitydata })
 
           //console.log(this.state.communitydata);
-          const array = communitydata.map(function(x,i){      
+        const array = communitydata.map(function(x,i){
                       
           elements.push({"latlong" : x.community_lat_long, "community_name" : x.community_name , "community_id" : x.community_id , "community_tagline" : x.community_tagline , "name" :x.name })
           //elements.push(x)         
@@ -104,6 +104,8 @@ class MembersCard extends Component {
       return body;
     }
 
+
+
   setLibraryLink()  {
 
         if(this.state.communitydata[0])
@@ -119,7 +121,7 @@ class MembersCard extends Component {
             else
             {
                   return(
-                  ''
+                   <a href={"/library/"+this.props.params.cid}> | View Documents </a>
                   )  
             }
         }
@@ -138,7 +140,7 @@ class MembersCard extends Component {
     <div className="container">
     <div className="title">
 
-    <h3> <a href={"/members-card/"+this.props.params.cid}> My Community Members </a>  {this.setLibraryLink()}   </h3>
+    <h3> <a className="linkclass" href={"/members-card/"+this.props.params.cid}  > Community members </a>  {this.setLibraryLink()}   </h3>
     <div className="sep"><img src="/images/sep.jpg" /></div></div>
         
         <div className="col-sm-7 pull-right">
@@ -149,13 +151,13 @@ class MembersCard extends Component {
         </div>
         </div>
 
-        <div className="col-sm-5 pull-left">
-          <div className="left-section">
-            <div className="inner-tilte"><h3>Members Cards</h3><div className="sep"><img src="/images/sep.jpg" /></div></div>
+      <div className="col-sm-5 pull-left">
+      <div className="left-section">
+      <div className="inner-tilte"><h3>Members Cards</h3><div className="sep"><img src="/images/sep.jpg" /></div></div>
 
-            <ul className="members-name">
+      <ul className="members-name">           
 
-            {this.state.memberdata == "" ? <p className="simplecase"> Please check back soon for more details on this community </p> : "" }
+      {this.state.memberdata == "" ? <p className="simplecase"> Please check back soon for more details on this community </p> : "" }
 
       {this.state.memberdata.map(member =>
         

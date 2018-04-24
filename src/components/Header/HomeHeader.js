@@ -6,7 +6,7 @@ export default class HomeHeader extends React.Component {
 
     constructor(props) {
     super(props);
-    this.state = { hits: null,sessionStatus:false };
+    this.state = { hits: null,sessionStatus:false , unreadmsgcount: 0 , notificationArr: [] };
 
       this.st  = false;   
 
@@ -17,6 +17,108 @@ export default class HomeHeader extends React.Component {
 
        this.handleCommunitySearch = this.handleCommunitySearch.bind(this);
   }
+
+
+   componentDidMount() {
+
+    if(sessionStorage.getItem('session_tokenid') && !sessionStorage.getItem('asession_tokenid'))
+    {      
+      this.interval = setInterval(this.triggerFunHead, 5000);
+
+      var fromid = sessionStorage.getItem('session_tokenid');
+
+
+      this.callApiMsgTotalCount(fromid)      
+      .then(result => this.setState({unreadmsgcount : result[0].unreadmsg}));
+    
+
+      this.callApiNotification(fromid)      
+      .then(result => this.setState({notificationArr : result}));
+    }
+
+  }
+
+   // notification
+     callApiNotification = async (cstr) => {
+
+      const response = await fetch('/api/getnotifications?userid='+cstr,{
+      method: 'GET',   
+      headers: {"pragma": "no-cache","cache-control" : "no-cache"}
+      });
+
+      const body = await response.json();
+
+      if (response.status !== 200) throw Error(body.message);
+
+      return body;
+  
+  } 
+
+    callApiMsgTotalCount = async (cstr) => {
+
+      const response = await fetch('/api/msgtotalcount?userid='+cstr,{
+      method: 'GET',   
+      headers: {"pragma": "no-cache","cache-control" : "no-cache"}
+      });
+
+      const body = await response.json();
+
+      if (response.status !== 200) throw Error(body.message);
+
+      return body;
+  
+  }
+
+  displayMessageCounts(counts)
+{
+  if(counts==0)
+  {
+    return(
+      <span></span>
+    )  
+  }
+  else
+  {
+      return(
+      <span className="count">{counts}</span>
+    )
+  }
+  
+
+}
+
+notifications() {
+
+ console.log(this.state.notificationArr);
+ // sid: 2, rid: 19, countnotifiction: 1, sendername: "ABC", lastmsg: "Pending community join requests"
+
+  return(
+
+     <ul className="dropdown-menu notificationdiv" role="menu">  
+     { this.state.notificationArr[0]?
+    
+      this.state.notificationArr.map(member =>                 
+        
+        <li class="dropdown-submenu" >
+
+      { member.lastmsg == 'Pending community join requests' ?
+
+         <a href="/pending-request"> <strong>{member.sendername}</strong>: Community join requests </a> 
+      :
+        <a href={"/message/"+member.rid+"/"+member.sid+"/0"}> <strong>{member.sendername}</strong>: {member.lastmsg} </a> 
+      }
+        
+        </li>
+
+        )
+
+        :
+        ''
+    }
+     </ul>
+  )
+}
+
 
     handleCommunitySearch(event) {
 
@@ -39,13 +141,44 @@ export default class HomeHeader extends React.Component {
           );
   }
 
+  profilePic() {
+
+    var user_pic = sessionStorage.getItem('session_tokenid')+"_userpic.jpg"; 
+
+    return(
+      <div className="header_profile_pic">              
+        <img id="imageprol" alt="" onError={this.handleImgError} width="30" src={"/uploads/users/"+user_pic} />
+      </div>
+    )
+  }
+
    homeAfterLoginNav() {
         
         return(
           <ul className="nav navbar-nav navbar-right" id="left-menu">
                 <li className="search"><a href="#search"> <i className="icon Serarch"></i></a></li>
-                <li className="log"><a href="/addcommunity"> <i className="icon createcommunity"></i>Create Community</a></li>
-                <li className="signup"><a href="/community-display"> <i className="icon sign"></i>Join Community</a></li> 
+                  <li className="furtherlinks show-on-hover">
+                  <a href="#iq-home" className="dropdown-toggle" data-toggle="dropdown">My Community</a>
+                  <ul className="dropdown-menu" role="menu">
+                    <li><a href="/my-community">My Community</a></li>
+                    <li><a href="/joined-communities">My Joined Communities</a></li>
+                    <li><a href="/pending-communities">Approval Pending Communities</a></li>
+                    <li><a href="/addcommunity">Add Community</a></li>                   
+                    <li><a href="/invite-newmember">Invite New Members</a></li>
+                    <li><a href="/pending-request">Pending Join Requests</a></li>
+              
+                  </ul>
+                </li>
+                <li className="furtherlinks"><a href="/community-display">Other Communities</a></li>
+
+                <li className="furtherlinks"><a href="/help">Help</a></li>
+  <li className="inboxs furtherlinks show-on-hover ">
+  
+    <a href="#iq-home" className="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" ><i className="icon inbox"></i> {this.displayMessageCounts(this.state.unreadmsgcount)} </a>
+     
+     {this.notifications()}    
+
+  </li>  
                 <li className="signup"><a href="/logout"> <i className="icon logout"></i> </a></li>             
           </ul>          
           );
@@ -132,7 +265,9 @@ export default class HomeHeader extends React.Component {
               </ul>
             </li>
             <li className="furtherlinks"><a href="/community-display">Other Communities</a></li> 
-            <li className="furtherlinks"><a href="/help">Help</a></li>        
+            <li className="furtherlinks"><a href="/help">Help</a></li>      
+            <li className="furtherlinks"><a href="/message">Message</a></li>      
+
           </ul>
             : ''
               }             

@@ -3,6 +3,10 @@ import React, { PropTypes, Component } from 'react';
 import classnames from 'classnames';
 import Header from '../Header/Header.js';
 import $ from 'jquery';
+
+
+
+
 class CommunityDisplay extends Component {  
 
     constructor(props) {
@@ -18,7 +22,9 @@ class CommunityDisplay extends Component {
       showResults: false,
       showedit: false,
       currentLocation:"",
-      editSt:true
+      editSt:true,
+      elements_member: [],
+      communitydata_member: []
     };  
 
     //this.setState({ communitydata: communitydata }
@@ -30,17 +36,17 @@ class CommunityDisplay extends Component {
 
 // join community function
 
-  onClick(event,cid,user_id) {
+  onClick(event,cid,user_id,community_owner_id) {
 
-      this.func1(event,cid,user_id)
+      this.func1(event,cid,user_id,community_owner_id)
       .then((joinresp) => {console.log(joinresp) });     
   }
   
-  func1(event,commun_id,user_id) {
+  func1(event,commun_id,user_id,community_owner_id) {
     
-        var userdata = {commun_id:commun_id,user_id:user_id};
+        var userdata = {commun_id:commun_id,user_id:user_id,reciver_id:community_owner_id};
 
-        const response =  fetch('/api/joincommunity?commun_id='+commun_id+'&user_id='+user_id,userdata,{
+        const response =  fetch('/api/joincommunity?commun_id='+commun_id+'&user_id='+user_id+'&reciver_id='+community_owner_id,userdata,{
         method: 'GET',         
         headers: {"pragma": "no-cache","cache-control" : "no-cache"}
         }).then( (response) => {
@@ -53,7 +59,7 @@ class CommunityDisplay extends Component {
             if(json.commun_rel_id)
             {              
                 alert("Your request has been submitted to the community owner");
-
+                 this.props.router.push('/pending-communities');
                this.setState({ successmsg: "your request has been submitted to the community owner",showResults:false });
             }
             else
@@ -112,6 +118,8 @@ class CommunityDisplay extends Component {
                 else
                 {
 
+// For search 
+
 if(this.props.params.cstr)
 {
     this.callApiGetSearchCommunity(this.props.params.cstr)
@@ -127,23 +135,43 @@ if(this.props.params.cstr)
   window.initialize(elements);
 
   }); 
-}
+} // end search
 else
 {
-this.callApiGetAllCommunity()
-//.then(res => res.json())
-.then((communitydata) => {this.setState({ communitydata: communitydata })
 
-//console.log(this.state.communitydata);
-const array = communitydata.map(function(x,i){      
+  // community-display  other community section 
 
-elements.push({"latlong" : x.community_lat_long, "community_name" : x.community_name , "community_id" : x.community_id , "community_tagline" : x.community_tagline , "name" :x.name })
-//elements.push(x)         
+    this.callApiGetAllCommunity()
+    //.then(res => res.json())
+    .then((communitydata) => {this.setState({ communitydata: communitydata })
 
-})
-window.initialize(elements);
+    //console.log(this.state.communitydata);
+    const array = communitydata.map(function(x,i){      
 
-}); 
+    elements.push({"latlong" : x.community_lat_long, "community_name" : x.community_name , "community_id" : x.community_id , "community_tagline" : x.community_tagline , "name" :x.name })
+    //elements.push(x)         
+
+    })
+    window.initialize(elements);
+
+    }); 
+
+
+    // get current user membership with community
+
+         this.callApiGetAllCommunityMemberShip(sessionStorage.getItem('session_tokenid')).then((communitymember) => {     
+
+          this.setState({ communitymember: communitymember })
+
+          
+
+           const array = communitymember.map(function(x,i){ 
+
+            console.log(x);
+           })  
+        
+        }) 
+    // end
 }
 
                   this.setState({ editSt:false });
@@ -196,12 +224,80 @@ window.initialize(elements);
   
   }
 
+    callApiGetAllCommunityMemberShip = async (uid) => {
+
+      const response = await fetch('/api/joinedcommunitybyuid_statusmembership?uid='+uid,{
+      method: 'GET',   
+      headers: {"pragma": "no-cache","cache-control" : "no-cache"}
+      });
+
+      const body = await response.json();
+
+      if (response.status !== 200) throw Error(body.message);
+
+      return body;
+  
+  }
+
+  checkmembership(community_id,uid,community_owner_id) {  
+ 
+   
+
+    var mestatus = false;
+    var cid = 0;    
+    
+    if(this.state.communitymember)
+    {
+      if(this.state.communitymember.length == 0)
+      {
+        mestatus = true;
+      }
+      else
+      {
+        for(var i = 0; i < this.state.communitymember.length; i++) {
+            
+            
+
+             if(this.state.communitymember[i].commun_id == community_id)
+               {
+                    mestatus = false;    
+                    break;   
+               }
+               else
+               {
+                 cid      = this.state.communitymember[i].commun_id;
+                 mestatus = true;
+               }
+
+        } // end for
+
+      }
+        /*this.state.communitymember.map(function(topic) {
+              
+        });*/   
+    }
+
+    return (
+
+        mestatus?
+
+            cid != community_id?
+            <a href="javascript:;" onClick={(event) => { this.func1(event,community_id,uid,community_owner_id); }} className="view-detail">Join </a>
+            :
+            ''
+
+            :
+            '4'
+      )
+
+  }
 
 
   render() {
           
           const { className, ...props } = this.props;      
-         
+          
+          
 
     return (
       <div>
@@ -265,27 +361,43 @@ window.initialize(elements);
               this.state.communitydata[0] ?
 
               this.state.communitydata.map(member =>
-            
-            <li key={member.community_id}>        
-             <div className="membercard"><img alt="" src="/images/community-card.png" /></div>
-              <div className="memberinfo">
-                <span className="members-name"> {member.community_name} </span>
-                
-                <div className="totalmember"> {member.community_tagline} </div>
+                         
 
-                <div className="totalmember">Owner Name : <span className="m-number">{member.name}</span></div>
-               <div className="communitybuttons">
-    <a href={'/members-card/'+member.community_id} className="view-detail">View details</a>
+      <li key={member.community_id}>        
+
+      <div className="membercard"><img alt="" src="/images/community-card.png" /></div>
+      <div className="memberinfo">
+      <span className="members-name"> {member.community_name} </span>
+                
+      <div className="totalmember"> {member.community_tagline} </div>
+
+      <div className="totalmember">Owner Name : <span className="m-number">{member.name}</span></div>
+      <div className="communitybuttons">
+      
+      <a href={'/members-card/'+member.community_id} className="view-detail">View details</a>
                 
       { this.state.editSt ?
 
       <a href={'edit-community-details/'+member.community_id} className="view-detail">Edit</a>
-      :                
-     <a href="javascript:;" onClick={(event) => { this.func1(event,member.community_id,sessionStorage.getItem('session_tokenid')); }} className="view-detail">Join</a>
+      :    
+      sessionStorage.getItem('session_tokenid') ==  member.community_owner_id ?
+      ''
+      :
+
+
       
+
+        this.checkmembership(member.community_id,sessionStorage.getItem('session_tokenid'),member.community_owner_id) 
+        
+     
+
+
       }   
-        </div>
+      
+      </div>
   
+   
+
                 {/* this.state.editSt ?
                
                <a href={'/'+member.community_id} className="view-detail">Edit</a> 
@@ -299,7 +411,7 @@ window.initialize(elements);
                
             :
 
-            <p className="simplecase">Please create or join a community</p>
+            <p className="simplecase"> Please create or join a community </p>
 
             }
 

@@ -2,6 +2,7 @@ import React, { PropTypes, Component } from 'react';
 import classnames from 'classnames';
 import Header from '../Header/Header.js';
 import { Link } from 'react-router';
+import $ from 'jquery';
 
 class InviteNewMembers extends Component {  
 
@@ -24,6 +25,8 @@ class InviteNewMembers extends Component {
     };
     
     this.handleInviteSubmit = this.handleInviteSubmit.bind(this);
+
+    this.handleMannualChange = this.handleMannualChange.bind(this);
   }
 
    handleChange(i, event) {
@@ -32,15 +35,25 @@ class InviteNewMembers extends Component {
      this.setState({value});
   }
 
+   handleMannualChange(event) {
+
+    this.setState({
+       user_id: this.refs.user_id.value,
+       commu_id: this.refs.commu_id.value
+    })
+  }
+
   handleInviteSubmit(event) {
        
+      
      var userdata = [];
      var valuearr = {};
 
           const data = new FormData(event.target); 
 
-          var user_id = data.get('user_id'); 
-          var commu_id = data.get('commu_id'); 
+          var user_id  =  this.state.user_id; //data.get('user_id'); 
+          var commu_id =  this.state.commu_id; //data.get('commu_id'); 
+
 
           userdata.push({user_id:user_id,commu_id:commu_id});
           //valuearr["commu_id"] = commu_id;
@@ -50,16 +63,19 @@ class InviteNewMembers extends Component {
           var stt =  true;       
 
         for(let i = 0; i < this.state.count; i++) {
-          
-            if(data.get('email'+i) && data.get('email'+i) !== "")
-            {
-                  var addemail = data.get('email'+i);
-                  var canProceed = this.validateEmail(addemail);
 
+          var addemail =  $('#email'+i).val();
+          
+            if(addemail && addemail !== "")
+            {
+                  //var addemail = data.get('email'+i);
+                
+                  var canProceed = this.validateEmail(addemail);
+                
                   if(canProceed)
                   {
-                     valuearr["emailids"].push(data.get('email'+i));
-                    stt = true;
+                     valuearr["emailids"].push(addemail);
+                     stt = true;
                   }
                   else
                   {
@@ -172,7 +188,7 @@ class InviteNewMembers extends Component {
     return (
               <div className="input-group-invite">                
 
-                  <select name="commu_id" className="form-control" required >  
+                  <select name="commu_id" ref="commu_id" onChange={this.handleMannualChange} className="form-control" required >  
                   <option value=""> Select Community </option>  
                     
                     {this.state.communitydata.map(member =>           
@@ -194,7 +210,7 @@ class InviteNewMembers extends Component {
 
             <div className="input-group" key={i}>
               <span className="input-group-addon"><i className="fa fa-envelope"></i><a className="readmore" href="javascript:;" onClick={this.removeClick.bind(this,i)}>X</a>              </span>
-              <input id="login-username" required type="text" className="form-control" name={"email"+i} value={this.state.value[i] || ''} onChange={this.handleChange.bind(this,i)} placeholder="Email"/>             
+              <input id={"email"+i} required type="text" className="form-control" name={"email"+i} value={this.state.value[i] || ''} onChange={this.handleChange.bind(this,i)} placeholder="Email"/>             
                    
             </div>
 
@@ -219,42 +235,9 @@ class InviteNewMembers extends Component {
           {this.renderCommunityDrop()}
           {this.createUI()}
               
-              <input type="hidden" value={sessionStorage.getItem('session_tokenid')} name="user_id" />
+              <input type="hidden" value={sessionStorage.getItem('session_tokenid')} id="user_id" name="user_id" ref="user_id" onChange={this.handleMannualChange} />
 
-          {/*  <div className="input-group">
-              <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-              <input id="login-username" type="text" className="form-control" name="email0" value={this.state.value[0] || ''} onChange={this.handleChange.bind(this,0)} placeholder="Email"/>
-            </div>  
-            <div className="input-group">
-              <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-              <input id="login-username" type="text" className="form-control" name="email1" value={this.state.value[1] || ''} onChange={this.handleChange.bind(this,1)} placeholder="Email"/>
-            </div>
-            <div className="input-group">
-              <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-              <input id="login-username" type="text" className="form-control" name="email2" value="" placeholder="Email"/>
-            </div>
-            <div className="input-group">
-              <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-              <input id="login-username" type="text" className="form-control" name="email3" value="" placeholder="Email"/>
-            </div> */}
-           {/* <div className="more-content">
-              <div className="input-group">
-                <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-                <input id="login-username" type="text" className="form-control" name="email4" value="" placeholder="Email"/>
-              </div>  
-              <div className="input-group">
-                <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-                <input id="login-username" type="text" className="form-control" name="email5" value="" placeholder="Email"/>
-              </div>
-              <div className="input-group">
-                <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-                <input id="login-username" type="text" className="form-control" name="email6" value="" placeholder="Email"/>
-              </div>
-              <div className="input-group">
-                <span className="input-group-addon"><i className="fa fa-envelope"></i></span>
-                <input id="login-username" type="text" className="form-control" name="email7" value="" placeholder="Email"/>
-              </div>
-            </div>*/}
+          
           
           <p>
           <a className="readmore" href="javascript:;" onClick={this.addClick.bind(this)}><i className="fa fa-plus-circle"></i></a>

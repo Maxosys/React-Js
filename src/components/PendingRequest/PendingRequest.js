@@ -25,20 +25,20 @@ class PendingRequest extends Component {
 
   }
 
-    onClick(event,commun_rel_id,user_id) {
+    onClick(event,commun_rel_id,user_id,commun_id) {
 
-      this.onApproveJoinCommunity(event,commun_rel_id,user_id)
+      this.onApproveJoinCommunity(event,commun_rel_id,user_id,commun_id)
       .then((joinresp) => {console.log(joinresp) }); 
-      this.delete_join_request(event,commun_rel_id,user_id)
+      this.delete_join_request(event,commun_rel_id,user_id,commun_id)
       .then((joinresp) => {console.log(joinresp) }); 
 
   }
 
-    delete_join_request(event,commun_rel_id,user_id) {
+    delete_join_request(event,commun_rel_id,user_id,commun_id) {
 
            //console.log(commun_rel_id);
 
-        const response =  fetch('/api/delete_join_request?commun_rel_id='+commun_rel_id+'&user_id='+user_id,{
+        const response =  fetch('/api/delete_join_request?commun_rel_id='+commun_rel_id+'&user_id='+user_id+'&commun_id='+commun_id,{
         method: 'GET',         
         headers: {"pragma": "no-cache","cache-control" : "no-cache"}
         }).then( (response) => {
@@ -63,11 +63,11 @@ class PendingRequest extends Component {
 
   }
 
-  onApproveJoinCommunity(event,commun_rel_id,user_id) {
+  onApproveJoinCommunity(event,commun_rel_id,user_id,commun_id) {
 
            //console.log(commun_rel_id);
 
-        const response =  fetch('/api/approve_join_request?commun_rel_id='+commun_rel_id+'&user_id='+user_id,{
+        const response =  fetch('/api/approve_join_request?commun_rel_id='+commun_rel_id+'&user_id='+user_id+'&commun_id='+commun_id,{
         method: 'GET',         
         headers: {"pragma": "no-cache","cache-control" : "no-cache"}
         }).then( (response) => {
@@ -92,7 +92,7 @@ class PendingRequest extends Component {
 
   }
 
-   componentWillMount() {        
+   componentWillMount() {
         
         // set title 
           document.title = this.props.route.title;
@@ -150,7 +150,7 @@ class PendingRequest extends Component {
 
           this.state.requestdata.map(member =>
 
-      <div className="col-xs-12 col-md-6" key={member.commun_rel_id} >
+      <div className="col-xs-12 col-md-6" style={{ minHeight: '40vh' }} key={member.commun_rel_id} >
       <div className="req-listing">
       <div className="user-img">
         <img alt="" src="images/card.png" />
@@ -160,15 +160,15 @@ class PendingRequest extends Component {
         <div className="email"> {member.community_name} </div>
       </div>
       <div className="pending-req">
-        <a href="javascript:;"  onClick={(event) => { this.delete_join_request(event,member.commun_rel_id,member.user_id) }} ><i className="fa fa-times-circle" aria-hidden="true"></i></a>
-        <a href="javascript:;" className="approve" onClick={(event) => { this.onApproveJoinCommunity(event,member.commun_rel_id,member.user_id) }}>Approve</a>
+        <a href="javascript:;"  onClick={(event) => { this.delete_join_request(event,member.commun_rel_id,member.user_id,member.commun_id) }} ><i className="fa fa-times-circle" aria-hidden="true"></i></a>
+        <a href="javascript:;" className="approve" onClick={(event) => { this.onApproveJoinCommunity(event,member.commun_rel_id,member.user_id,member.commun_id) }}>Approve</a>
       </div>
       </div>
       </div>
           )
       :
-      <div className="col-xs-12 col-md-6" style={{ minHeight: '40vh' }} > 
-       <h3> Not found any join pending request </h3> 
+      <div className="col-xs-12 col-md-12" style={{ minHeight: '40vh' }} > 
+       <p> No pending join requests </p> 
       </div>
     }
 
