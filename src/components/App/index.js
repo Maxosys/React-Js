@@ -185,7 +185,7 @@ class App extends Component {
     <div className="video">
       <div className="container">
         <div className="video-section">
-          <iframe src="https://www.youtube.com/embed/YnHcvwOXQIo?rel=0&amp;showinfo=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe> 
+          <iframe src="https://www.youtube.com/embed/YnHcvwOXQIo?rel=0&amp;showinfo=0" frameBorder="0" allow="autoplay; encrypted-media" allowFullScreen></iframe> 
         </div>
       </div>
     </div>

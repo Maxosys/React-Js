@@ -5,7 +5,7 @@ body {color: #666666; font-family: "Poppins",sans-serif !important; font-size: 1
  html, body{padding: 0; margin: 0;}
 /* #earth_div{top: 0px; right: 0; bottom: 0; left: 0; position: absolute !important;     overflow: visible !important;     -webkit-margin-before: -20px;}*/
 
-#earth_div {bottom: 0; height: 587px; left: 0; position: absolute !important; right: 0; top: 0; }
+#earth_div {bottom: 0; height: 587px; left: 0; position: absolute !important; right: 0; top: 0; touch-action:none; }
 
 
 a, .button { transition: all 0.5s ease-in-out; transition: all 0.5s ease-in-out; -moz-transition: all 0.5s ease-in-out; -ms-transition: all 0.5s ease-in-out; -o-transition: all 0.5s ease-in-out; -webkit-transition: all 0.5s ease-in-out; color: #333333; }

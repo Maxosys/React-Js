@@ -56,9 +56,8 @@ class EditCommunityDetails extends Component {
           else
           {
            var community_visibility  = 'off'; 
-          }
+          }          
           
-          alert(community_visibility);
 
           var community_status      = 1;
           var community_location    = ""; //data.get('community_location');

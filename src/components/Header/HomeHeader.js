@@ -113,7 +113,7 @@ notifications() {
         )
 
         :
-        ''
+        <li class="dropdown-submenu" > <a href="/message"> empty notification </a> </li>
     }
      </ul>
   )
