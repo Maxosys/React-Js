@@ -13,7 +13,7 @@ node server run on http://localhost:9000
 
 Command : node server
 
-Connected with itribedb.sql database.
+Connected with db.sql database.
 
 3) a) React components in src/components
    b) routes in routes.js
