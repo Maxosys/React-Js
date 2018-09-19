@@ -14,7 +14,7 @@ let fs = require('fs');
 var base_s_url = "http://localhost:3000";
 var base_url   = "http://localhost:3000";
 
-sgMail.setApiKey('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');
+sgMail.setApiKey('SG.VWBvoY');
 
 //sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 //connect to mysql don't use var tomake it global
