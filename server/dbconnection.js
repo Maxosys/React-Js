@@ -2,15 +2,10 @@ var mysql=require('mysql');
 
 var connection=mysql.createPool({
  
-/* host:'itribedbinstance.cdcnrqweikkn.us-east-2.rds.amazonaws.com',
- user:'iTribe',
- password:'qwQWasASzxZX',
- database:'itribedb'*/
-
  host:'localhost',
  user:'root',
  password:'',
- database:'itribedb'
+ database:'iapp'
  
 });
 
